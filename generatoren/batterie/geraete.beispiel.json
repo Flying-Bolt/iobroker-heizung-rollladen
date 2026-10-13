@@ -1,0 +1,212 @@
+[
+ {
+  "id": "Haus",
+  "host": "192.168.1.99",
+  "geraete": [
+   {
+    "adr": "00AB0000000017",
+    "typ": "HmIP-WTH-B-2",
+    "ort": "Wohnzimmer",
+    "bez": "Wandthermostat"
+   },
+   {
+    "adr": "00AB0000000018",
+    "typ": "HmIP-eTRV-B-2 R4M",
+    "ort": "Eingang",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000015",
+    "typ": "HmIP-DLD",
+    "ort": "Haustür",
+    "bez": "Türschloss"
+   },
+   {
+    "adr": "00AB0000000019",
+    "typ": "HmIP-eTRV-C",
+    "ort": "Keller",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000020",
+    "typ": "HMIP-SWDO",
+    "ort": "Gäste",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000021",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Abstellraum",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000022",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Wohnzimmer",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000023",
+    "typ": "HMIP-SWDO",
+    "ort": "Bad",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000024",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Wohnzimmer",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000025",
+    "typ": "HMIP-SWDO",
+    "ort": "Abstellraum",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000026",
+    "typ": "HMIP-SWDO",
+    "ort": "Eingang",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000027",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Gäste",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000028",
+    "typ": "HMIP-SWDO",
+    "ort": "Küche",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000029",
+    "typ": "HMIP-SWDO",
+    "ort": "Wohnzimmer",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000030",
+    "typ": "HMIP-SWDO",
+    "ort": "Gym",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000031",
+    "typ": "HmIP-STHD",
+    "ort": "Keller",
+    "bez": "Wandthermostat"
+   },
+   {
+    "adr": "00AB0000000032",
+    "typ": "HmIP-eTRV-C",
+    "ort": "Küche",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000033",
+    "typ": "HMIP-SWDO",
+    "ort": "Gäste",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000014",
+    "typ": "HmIP-SMI55-2",
+    "ort": "Flur 2",
+    "bez": "Bewegungsmelder"
+   },
+   {
+    "adr": "00AB0000000034",
+    "typ": "HmIP-STH",
+    "ort": "Bad",
+    "bez": "Wandthermostat"
+   },
+   {
+    "adr": "00AB0000000035",
+    "typ": "HMIP-SWDO",
+    "ort": "Büro",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000036",
+    "typ": "HMIP-SWDO",
+    "ort": "Keller",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000037",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Büro",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000038",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Gym",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000039",
+    "typ": "HMIP-SWDO",
+    "ort": "Wohnzimmer",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000013",
+    "typ": "HmIP-SMI55-2",
+    "ort": "Flur 1",
+    "bez": "Bewegungsmelder"
+   },
+   {
+    "adr": "00AB0000000040",
+    "typ": "HmIP-eTRV-2",
+    "ort": "Bad",
+    "bez": "Heizkörperthermostat"
+   }
+  ]
+ },
+ {
+  "id": "Schwiegereltern",
+  "host": "192.168.1.99",
+  "geraete": [
+   {
+    "adr": "00AB0000000012",
+    "typ": "HmIP-eTRV-2 I9F",
+    "ort": "Keller",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000007",
+    "typ": "HmIP-WTH-2",
+    "ort": "Wohnzimmer",
+    "bez": "Wandthermostat"
+   },
+   {
+    "adr": "00AB0000000010",
+    "typ": "HmIP-eTRV-B-2 R4M",
+    "ort": "Küche",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000009",
+    "typ": "HmIP-SWDM-2",
+    "ort": "Wohnzimmer",
+    "bez": "Fensterkontakt (Terrassentür)"
+   },
+   {
+    "adr": "00AB0000000011",
+    "typ": "HmIP-SWDO-2",
+    "ort": "Küche",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000008",
+    "typ": "HmIP-eTRV-B-2 R4M",
+    "ort": "Wohnzimmer",
+    "bez": "Heizkörperthermostat"
+   }
+  ]
+ }
+]

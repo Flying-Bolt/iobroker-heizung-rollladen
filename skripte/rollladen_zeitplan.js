@@ -1,6 +1,6 @@
 'use strict';
 // ============================================================================
-// Schwiegereltern_Rollladen  (02.10.2026, Claude) -- DUMMY, bis die Rollladenaktoren eingebaut sind
+// Schwiegereltern_Rollladen  (02.10.2026, Claude) (Dummy-Modus ohne Aktor, mit Aktor echte Fahrt)
 // Rollladensteuerung fuer das Haus der Schwiegereltern (CCU3 192.168.1.99) mit ZEITPLAN: je Rollladen EINMAL pro Tag hoch
 // und EINMAL runter, Uhrzeiten in der View einstellbar. Datenpunkte: 0_userdata.0.Rollladen_Schwiegereltern.<Raum>.*
 //   Position 0..100 % (0 = zu, 100 = ganz offen, wie LEVEL der HmIP-Rollladenaktoren), Ziel, Fahrt (-1 zu, 0 steht, 1 auf), Status
@@ -8,7 +8,7 @@
 // Befehle (nur nach Entsperren, 60 s): Befehl = auf | zu | stopp | z0 z25 z50 z75 z100 | auto_an | auto_aus;
 //   Hoch_Schritt / Runter_Schritt = Minuten-Aenderung (+5, -30 ...); Allgemein.Alle_Befehl = auf | zu | stopp
 // OHNE Eintrag in AKTOR wird die Fahrt SIMULIERT (30 s). Mit Eintrag werden Befehle ueber XML-RPC an den echten Aktor gesendet
-// (Port 2010 der CCU3, nicht ueber ioBroker-Objekte) und dessen Position gelesen. Der Weg "echter Aktor" ist NICHT getestet.
+// (Port 2010 der CCU3, nicht ueber ioBroker-Objekte) und dessen Position gelesen. Der Weg "echter Aktor" ist im Betrieb erprobt (HmIP-BROLL/-BROLL-2, Kanal 4 = SHUTTER_VIRTUAL_RECEIVER).
 //   AKTOR = { 'Wohnzimmer': { adr: '<Geraeteadresse>:<Kanal mit LEVEL>' } }   (Kanal mit finde_level.py ermitteln)
 // Der Zeitplan laeuft HIER (ioBroker-Rechner), nicht in der CCU: faellt der Tunnel oder ioBroker-Rechner zur Zeit aus, wird innerhalb von 60 Minuten nachgeholt.
 // ============================================================================
@@ -95,7 +95,7 @@ async function logge(raum, text, ok) {
 async function meldung(r, text) { await setStateAsync(P + r.id + '.Meldung', text, true); }
 async function gesperrt() { return !(await get(P + 'Allgemein.Entsperrt')); }
 
-// ---------- XML-RPC fuer echte Aktoren (nicht getestet) ----------
+// ---------- XML-RPC fuer echte Aktoren (im Betrieb erprobt) ----------
 function rpc(method, params) {
     const body = '<?xml version="1.0"?><methodCall><methodName>' + method + '</methodName><params>' + params.map(p => '<param><value>' + p + '</value></param>').join('') + '</params></methodCall>';
     return new Promise((resolve, reject) => {

@@ -5,12 +5,8 @@ import json
 from urllib.parse import quote
 NAVID = "w00090"; H = 44   # Hoehe, um die alles nach unten rutscht
 EIGEN = [("Räume", "Schwiegereltern", "Raeume"), ("Rollladen", "Schwiegereltern", "Rollladen")]
-GRUPPEN = [  # Farbleiste wie in main
-  ("#f5a623", [("Power","Energy_Consumption"),("Energy","E3DC"),("E&K","E&K"),("Prog","Prognosen"),("Lade","Ladesteuerung")]),
-  ("#4c9be8", [("Heizung","Heizung_Boiler"),("HMU","HMU"),("Schema","Heizung"),("Klima","Raumklima"),("Therm","Thermostate"),("Pool","Pool"),("Bunker","Bunker"),("Present","Present")]),
-  ("#5cc46a", [("Graph","Dashboard"),("Monitor","Monitor"),("Value","Value"),("Meter","AI"),("KASPA","kaspa"),("Wind","Wind")]),
-  ("#b07be0", [("Batt","Batterie"),("Backup","Sicherungen"),("USV","USV"),("WEB","Dashboard")]),
-]
+GRUPPEN = []   # Eigene Navigationsgruppen: [("#4c9be8", [("Knopftext", "ViewName"), ...]), ...] -- Views des Projekts main. In diesem Repo leer.
+
 def html(aktiv):
     n = len(EIGEN) + sum(len(g[1]) for g in GRUPPEN); w = 1540; gap = 4; extra = 10
     bw = (w - 16 - gap * (n - 1) - extra * len(GRUPPEN)) / n

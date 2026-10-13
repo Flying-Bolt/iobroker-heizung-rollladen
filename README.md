@@ -15,7 +15,10 @@ Es wurde für das Haus einer Familie gebaut und dort 2026 in Betrieb genommen. A
 | **Thermostat-Wächter** | `skripte/thermostat_waechter.js` | `views/thermostate.json` | meldet Ventilfehler, schwache Batterie, nicht erreichbar per Telegram und als Banner |
 | **Batterie-Ampel** | `skripte/batterien_uebersicht.js` | `views/batterie.json` | rot/gelb/grün je Gerät, Schwelle **je Zelle** (nicht je Gerät) |
 
-Die Ordner `generatoren/` enthalten die Python-Skripte, die View und Karten-Skript erzeugen (siehe unten).
+**Weiterführend:**
+* [`docs/PROGRAMMLOGIK.md`](docs/PROGRAMMLOGIK.md) – die Programmlogik jedes Skripts im Detail (Abläufe, Algorithmen, Zeitsteuerung, Datenpunkte)
+* [`docs/CLAUDE-CODE-ANLEITUNG.md`](docs/CLAUDE-CODE-ANLEITUNG.md) – Schritt-für-Schritt-Anleitung, mit der **Claude Code** (oder ein anderer Agent) dieses Repository in ein ioBroker einbaut
+* [`CLAUDE.md`](CLAUDE.md) – Einstieg für Claude Code (wird automatisch gelesen)
 
 ## Bilder
 
@@ -44,6 +47,9 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
   höchstens **20 Befehle in 10 Minuten je Raum** und einen Gesamtschalter `Bedienung_erlaubt`. Nach jedem Skriptstart ist alles gesperrt.
 * **Rollladen:** Der Zeitplan läuft **in ioBroker**, nicht in der CCU. Fällt ioBroker zur Schaltzeit aus, wird innerhalb von 60 Minuten nachgeholt.
 
+> **Hinweis zu `views/`:** Die JSON-Dateien sind Exporte der laufenden Views (mit Karten-Bindungen). `views/heizung_raeume.json` enthält zusätzlich einen
+> Shelly-Sensorblock, dessen Skript nicht Teil des Pakets ist. Für den eigenen Einbau besser die **Generator-Ausgabe** (`generatoren/ausgabe/vis-views.json`) verwenden.
+
 ## Einrichtung (Kurzfassung)
 
 1. Im Skript `heizung_ccu.js` oben die Konfiguration anpassen: CCU-Adresse (`192.168.1.10` ist ein Platzhalter), Räume,
@@ -70,7 +76,17 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
 * **CCU-Programme statt Direktverknüpfung** für „Licht aus nach x Sekunden“: `ON_TIME` bei einer Sensor-Verknüpfung ist nur einmalig wirksam.
 * **ReGa-Skript:** verkettete Methodenaufrufe in einer Zeile lassen das ganze Skript kommentarlos scheitern. Erst Variable, dann Aufruf.
 
+## Zeitsteuerung (Cron)
+
+Es wird **kein Cron-Eintrag auf dem Betriebssystem** gebraucht. Alle Takte laufen im ioBroker-Javascript-Adapter (`schedule(...)`, `setInterval`):
+Heizung jede Minute (Werte), alle 30 s (Geräte), alle 10 Minuten (Wochenprofile); Rollladen jede Sekunde (Position) und alle 20 s (Zeitplan);
+Batterien alle 5 Minuten; Thermostat-Wächter alle 5 Minuten plus täglich 09:00 (Erinnerung). Details in `docs/PROGRAMMLOGIK.md`, Abschnitt 7.
+Nur die **Zeitzone** des Rechners muss stimmen.
+
 ## Generatoren
+
+**Ein Aufruf baut alles:** `cd generatoren && python3 bauen.py` → `generatoren/ausgabe/` (View-Projekt, Karten-, Rollladen- und Batterie-Skript, Batterie-View).
+`generatoren/view_einfuegen.py` fügt eine View in ein vorhandenes vis-2-Projekt ein. Einzelheiten:
 
 `generatoren/heizung/build_schwiegereltern.py` erzeugt aus einer Raumliste die View; `build_karten.py` macht aus der View die
 Vorlagen für `heizung_karten.js`; `sw_nav.py` baut die Navigationsleiste; `deploy_raeume.py` spielt ein (sichert vorher);
