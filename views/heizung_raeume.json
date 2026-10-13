@@ -1,0 +1,636 @@
+{
+ "settings": {
+  "style": {
+   "background_class": "",
+   "background": "#0b0e11",
+   "color": "#e9eef2"
+  },
+  "theme": "redmond",
+  "sizex": "1600",
+  "sizey": "2398",
+  "gridSize": "",
+  "useBackground": true,
+  "snapType": null
+ },
+ "widgets": {
+  "w00001": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r01}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "58px",
+    "width": "1540px",
+    "height": "92px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00002": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r02}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00003": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r03}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "420px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00004": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r04}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "810px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00005": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r05}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "1200px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00006": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Shelly.HTML}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "296px",
+    "width": "1540px",
+    "height": "130px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00007": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r06}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "442px",
+    "width": "1540px",
+    "height": "44px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00008": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r07}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "496px",
+    "width": "500px",
+    "height": "450px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00009": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r08}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "946px",
+    "width": "500px",
+    "height": "136px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00010": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r09}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1082px",
+    "width": "500px",
+    "height": "278px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00011": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r10}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "496px",
+    "width": "500px",
+    "height": "450px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00012": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r11}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "946px",
+    "width": "500px",
+    "height": "136px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00013": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r12}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "1082px",
+    "width": "500px",
+    "height": "278px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00014": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "<div style=\"position:relative;width:500px;height:190px;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;color:#6d7780;box-sizing:border-box;border:2px dashed #2f3942;border-radius:18px;background:rgba(255,255,255,0.015);\"><div style=\"position:absolute;left:28px;top:18px;font-size:64px;line-height:70px;color:#2f3942;\">+</div><div style=\"position:absolute;left:28px;top:96px;font-size:26px;font-weight:700;color:#8a96a0;\">Weitere Räume</div><div style=\"position:absolute;left:28px;top:130px;font-size:15px;\">folgen am Wochenende</div></div>",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "1070px",
+    "top": "496px",
+    "width": "500px",
+    "height": "190px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00015": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r13}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1388px",
+    "width": "1540px",
+    "height": "44px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00016": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r14}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1442px",
+    "width": "500px",
+    "height": "450px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00017": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r15}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1892px",
+    "width": "500px",
+    "height": "136px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00018": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r16}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "2028px",
+    "width": "500px",
+    "height": "278px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00019": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.r17}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "1442px",
+    "width": "1020px",
+    "height": "190px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00020": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "<div style=\"position:relative;width:1540px;height:34px;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:13px;color:#7f8b95;\"><span style=\"position:absolute;left:0px;top:4px;\"><span style=\"display:inline-block;width:12px;height:12px;border-radius:3px;background:#3b6fd4;margin-right:6px;vertical-align:-2px;\"></span>kalt unter 18°</span><span style=\"position:absolute;left:160px;top:4px;\"><span style=\"display:inline-block;width:12px;height:12px;border-radius:3px;background:#36b8c8;margin-right:6px;vertical-align:-2px;\"></span>kühl 18–20°</span><span style=\"position:absolute;left:320px;top:4px;\"><span style=\"display:inline-block;width:12px;height:12px;border-radius:3px;background:#4cc38a;margin-right:6px;vertical-align:-2px;\"></span>behaglich 20–22°</span><span style=\"position:absolute;left:480px;top:4px;\"><span style=\"display:inline-block;width:12px;height:12px;border-radius:3px;background:#f2c14e;margin-right:6px;vertical-align:-2px;\"></span>warm 22–24°</span><span style=\"position:absolute;left:640px;top:4px;\"><span style=\"display:inline-block;width:12px;height:12px;border-radius:3px;background:#ee6c4d;margin-right:6px;vertical-align:-2px;\"></span>heiß über 24°</span><span style=\"position:absolute;right:0;top:4px;\">Quelle: CCU3 192.168.1.99 · Geräte live · Gruppen alle 60 s · Profile alle 10 min · Bedienung hinter Schloss, Soll 8–26 °C</span></div>",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "2334px",
+    "width": "1540px",
+    "height": "34px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00090": {
+   "tpl": "tplHtml",
+   "data": {
+    "html": "<div style=\"position:relative;width:1540px;height:28px;box-sizing:border-box;border:1px solid #3d3d3d;border-radius:8px;background:linear-gradient(#1b1b1b,#0a0a0a);box-shadow:inset 0 1px 0 #333,0 2px 6px rgba(0,0,0,0.5)\"><a href=\"/vis-2/index.html?Schwiegereltern#Raeume\" style=\"position:absolute;left:8.0px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #ff7a7a;border-bottom:3px solid #ff7a7a;border-radius:6px;background:linear-gradient(#f04040,#c91d1d);color:#fff;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;font-weight:700;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#ff7a7a'\">Räume</a><a href=\"/vis-2/index.html?Schwiegereltern#Rollladen\" style=\"position:absolute;left:67.5px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #ff7ab6;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Rollladen</a><a href=\"/vis-2/index.html?main#Energy_Consumption\" style=\"position:absolute;left:133.0px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Power</a><a href=\"/vis-2/index.html?main#E3DC\" style=\"position:absolute;left:192.6px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Energy</a><a href=\"/vis-2/index.html?main#E%26K\" style=\"position:absolute;left:252.1px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">E&amp;K</a><a href=\"/vis-2/index.html?main#Prognosen\" style=\"position:absolute;left:311.6px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Prog</a><a href=\"/vis-2/index.html?main#Ladesteuerung\" style=\"position:absolute;left:371.1px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Lade</a><a href=\"/vis-2/index.html?main#Heizung_Boiler\" style=\"position:absolute;left:440.6px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Heizung</a><a href=\"/vis-2/index.html?main#HMU\" style=\"position:absolute;left:500.2px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">HMU</a><a href=\"/vis-2/index.html?main#Heizung\" style=\"position:absolute;left:559.7px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Schema</a><a href=\"/vis-2/index.html?main#Raumklima\" style=\"position:absolute;left:619.2px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Klima</a><a href=\"/vis-2/index.html?main#Thermostate\" style=\"position:absolute;left:678.7px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Therm</a><a href=\"/vis-2/index.html?main#Pool\" style=\"position:absolute;left:738.2px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Pool</a><a href=\"/vis-2/index.html?main#Bunker\" style=\"position:absolute;left:797.8px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Bunker</a><a href=\"/vis-2/index.html?main#Present\" style=\"position:absolute;left:857.3px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Present</a><a href=\"/vis-2/index.html?main#Dashboard\" style=\"position:absolute;left:926.8px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Graph</a><a href=\"/vis-2/index.html?main#Monitor\" style=\"position:absolute;left:986.3px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Monitor</a><a href=\"/vis-2/index.html?main#Value\" style=\"position:absolute;left:1045.8px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Value</a><a href=\"/vis-2/index.html?main#AI\" style=\"position:absolute;left:1105.4px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Meter</a><a href=\"/vis-2/index.html?main#kaspa\" style=\"position:absolute;left:1164.9px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">KASPA</a><a href=\"/vis-2/index.html?main#Wind\" style=\"position:absolute;left:1224.4px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Wind</a><a href=\"/vis-2/index.html?main#Batterie\" style=\"position:absolute;left:1293.9px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Batt</a><a href=\"/vis-2/index.html?main#Sicherungen\" style=\"position:absolute;left:1353.4px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Backup</a><a href=\"/vis-2/index.html?main#USV\" style=\"position:absolute;left:1413.0px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">USV</a><a href=\"/vis-2/index.html?main#Dashboard\" style=\"position:absolute;left:1472.5px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">WEB</a></div>",
+    "bindings": [],
+    "g_fixed": true
+   },
+   "style": {
+    "left": "30px",
+    "top": "8px",
+    "width": "1540px",
+    "height": "28px",
+    "z-index": "5"
+   },
+   "widgetSet": "basic"
+  }
+ },
+ "name": "Raeume",
+ "filterList": [],
+ "activeWidgets": []
+}

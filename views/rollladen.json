@@ -1,0 +1,546 @@
+{
+ "settings": {
+  "style": {
+   "background_class": "",
+   "background": "#0b0e11",
+   "color": "#e9eef2"
+  },
+  "theme": "redmond",
+  "sizex": "1600",
+  "sizey": "1638",
+  "gridSize": "",
+  "useBackground": true,
+  "snapType": null
+ },
+ "widgets": {
+  "w00001": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "<div style=\"position:relative;width:1540px;height:92px;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;color:#ffffff;\"><div style=\"position:absolute;left:0;top:10px;font-size:46px;font-weight:700;letter-spacing:1px;\">Rollladen</div><div style=\"position:absolute;left:2px;top:62px;font-size:17px;color:#8a96a0;letter-spacing:0.5px;\">Haus der Schwiegereltern · Zeitplan: je Rollladen einmal am Tag hoch und einmal runter</div><a href=\"/vis-2/index.html?Schwiegereltern#Raeume\" style=\"position:absolute;right:0;top:70px;font-size:14px;color:#4c9be8;text-decoration:none;\">‹ Raumklima</a><div style=\"position:absolute;left:0;top:90px;width:1540px;height:2px;background:linear-gradient(90deg,#f2a93b,#4c9be8,#b07be0,rgba(176,123,224,0));\"></div></div>",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "58px",
+    "width": "1540px",
+    "height": "92px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00002": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l01}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00003": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l02}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "420px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00004": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l03}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "810px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00005": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l04}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "1200px",
+    "top": "168px",
+    "width": "370px",
+    "height": "108px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00006": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l05}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "296px",
+    "width": "500px",
+    "height": "272px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00007": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l06}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "568px",
+    "width": "500px",
+    "height": "252px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00008": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l07}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "296px",
+    "width": "500px",
+    "height": "272px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00009": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l08}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "568px",
+    "width": "500px",
+    "height": "252px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00010": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l09}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "1070px",
+    "top": "296px",
+    "width": "500px",
+    "height": "272px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00011": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l10}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "1070px",
+    "top": "568px",
+    "width": "500px",
+    "height": "252px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00012": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l11}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "836px",
+    "width": "500px",
+    "height": "272px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00013": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l12}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1108px",
+    "width": "500px",
+    "height": "252px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00014": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l13}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "836px",
+    "width": "500px",
+    "height": "272px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00015": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l14}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "550px",
+    "top": "1108px",
+    "width": "500px",
+    "height": "252px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00016": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "{0_userdata.0.Schwiegereltern_Karten.l15}",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1388px",
+    "width": "1540px",
+    "height": "170px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00017": {
+   "tpl": "tplHtml",
+   "data": {
+    "g_fixed": true,
+    "g_visibility": false,
+    "g_css_font_text": false,
+    "g_css_background": false,
+    "g_css_shadow_padding": false,
+    "g_css_border": false,
+    "g_gestures": false,
+    "g_signals": false,
+    "g_last_change": false,
+    "visibility-cond": "==",
+    "visibility-val": 1,
+    "visibility-groups-action": "hide",
+    "html": "<div style=\"position:relative;width:1540px;height:34px;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:13px;color:#7f8b95;\"><span style=\"position:absolute;left:0;top:4px;\">Rollläden mit Kennzeichen LIVE fahren den echten Aktor, die mit DUMMY werden simuliert (30 s von zu bis offen). Aktoren trägt man im Skript Schwiegereltern_Rollladen in der Tabelle AKTOR ein, neue Räume in raeume.json. Der Zeitplan läuft auf ioBroker-Rechner: bei Ausfall zur Schaltzeit wird bis 60 Minuten später nachgeholt.</span></div>",
+    "bindings": [
+     "html"
+    ]
+   },
+   "style": {
+    "left": "30px",
+    "top": "1574px",
+    "width": "1540px",
+    "height": "34px",
+    "z-index": "1",
+    "bindings": []
+   },
+   "widgetSet": "basic"
+  },
+  "w00090": {
+   "tpl": "tplHtml",
+   "data": {
+    "html": "<div style=\"position:relative;width:1540px;height:28px;box-sizing:border-box;border:1px solid #3d3d3d;border-radius:8px;background:linear-gradient(#1b1b1b,#0a0a0a);box-shadow:inset 0 1px 0 #333,0 2px 6px rgba(0,0,0,0.5)\"><a href=\"/vis-2/index.html?Schwiegereltern#Raeume\" style=\"position:absolute;left:8.0px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #ff7ab6;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Räume</a><a href=\"/vis-2/index.html?Schwiegereltern#Rollladen\" style=\"position:absolute;left:67.5px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #ff7a7a;border-bottom:3px solid #ff7a7a;border-radius:6px;background:linear-gradient(#f04040,#c91d1d);color:#fff;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;font-weight:700;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#ff7a7a'\">Rollladen</a><a href=\"/vis-2/index.html?main#Energy_Consumption\" style=\"position:absolute;left:133.0px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Power</a><a href=\"/vis-2/index.html?main#E3DC\" style=\"position:absolute;left:192.6px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Energy</a><a href=\"/vis-2/index.html?main#E%26K\" style=\"position:absolute;left:252.1px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">E&amp;K</a><a href=\"/vis-2/index.html?main#Prognosen\" style=\"position:absolute;left:311.6px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Prog</a><a href=\"/vis-2/index.html?main#Ladesteuerung\" style=\"position:absolute;left:371.1px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #f5a623;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Lade</a><a href=\"/vis-2/index.html?main#Heizung_Boiler\" style=\"position:absolute;left:440.6px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Heizung</a><a href=\"/vis-2/index.html?main#HMU\" style=\"position:absolute;left:500.2px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">HMU</a><a href=\"/vis-2/index.html?main#Heizung\" style=\"position:absolute;left:559.7px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Schema</a><a href=\"/vis-2/index.html?main#Raumklima\" style=\"position:absolute;left:619.2px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Klima</a><a href=\"/vis-2/index.html?main#Thermostate\" style=\"position:absolute;left:678.7px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Therm</a><a href=\"/vis-2/index.html?main#Pool\" style=\"position:absolute;left:738.2px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Pool</a><a href=\"/vis-2/index.html?main#Bunker\" style=\"position:absolute;left:797.8px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Bunker</a><a href=\"/vis-2/index.html?main#Present\" style=\"position:absolute;left:857.3px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #4c9be8;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Present</a><a href=\"/vis-2/index.html?main#Dashboard\" style=\"position:absolute;left:926.8px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Graph</a><a href=\"/vis-2/index.html?main#Monitor\" style=\"position:absolute;left:986.3px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Monitor</a><a href=\"/vis-2/index.html?main#Value\" style=\"position:absolute;left:1045.8px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Value</a><a href=\"/vis-2/index.html?main#AI\" style=\"position:absolute;left:1105.4px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Meter</a><a href=\"/vis-2/index.html?main#kaspa\" style=\"position:absolute;left:1164.9px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">KASPA</a><a href=\"/vis-2/index.html?main#Wind\" style=\"position:absolute;left:1224.4px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #5cc46a;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Wind</a><a href=\"/vis-2/index.html?main#Batterie\" style=\"position:absolute;left:1293.9px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Batt</a><a href=\"/vis-2/index.html?main#Sicherungen\" style=\"position:absolute;left:1353.4px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">Backup</a><a href=\"/vis-2/index.html?main#USV\" style=\"position:absolute;left:1413.0px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">USV</a><a href=\"/vis-2/index.html?main#Dashboard\" style=\"position:absolute;left:1472.5px;top:3px;width:55.5px;height:22px;box-sizing:border-box;border:1px solid #4a4a4a;border-bottom:3px solid #b07be0;border-radius:6px;background:linear-gradient(#2a2a2a,#171717);color:#e8f0f8;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif;font-size:12px;line-height:18px;text-align:center;text-decoration:none;\" onmouseover=\"this.style.borderColor='#ee2b2b'\" onmouseout=\"this.style.borderColor='#4a4a4a'\">WEB</a></div>",
+    "bindings": [],
+    "g_fixed": true
+   },
+   "style": {
+    "left": "30px",
+    "top": "8px",
+    "width": "1540px",
+    "height": "28px",
+    "z-index": "5"
+   },
+   "widgetSet": "basic"
+  }
+ },
+ "name": "Rollladen",
+ "filterList": [],
+ "activeWidgets": []
+}

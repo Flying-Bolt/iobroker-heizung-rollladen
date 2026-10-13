@@ -1,0 +1,27 @@
+[
+ {
+  "id": "Wohnzimmer",
+  "name": "Wohnzimmer",
+  "accent": "#f2a93b"
+ },
+ {
+  "id": "Terrasse",
+  "name": "Terrassentür",
+  "accent": "#e8607a"
+ },
+ {
+  "id": "Kueche",
+  "name": "Küche",
+  "accent": "#4c9be8"
+ },
+ {
+  "id": "Schlafzimmer",
+  "name": "Schlafzimmer 1. OG",
+  "accent": "#b07be0"
+ },
+ {
+  "id": "Bad",
+  "name": "Bad 1. OG",
+  "accent": "#3fb8a8"
+ }
+]
