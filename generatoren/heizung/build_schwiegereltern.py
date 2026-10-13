@@ -156,7 +156,7 @@ def card(r):
                      '<line x1="10" y1="42" x2="2" y2="42" stroke="#ff5a4d" stroke-width="4" stroke-linecap="round"/></g>'
                      '</svg>' % (closed_op, open_op))
         o.append('<div style="position:absolute;left:132px;top:356px;%s">%s</div>' % (LABEL, wl.upper()))
-        o.append('<div style="position:absolute;left:132px;top:374px;font-size:30px;font-weight:700;color:%s;">%s</div>' % (wcol, wtxt))
+        o.append('<div style="position:absolute;left:132px;top:374px;font-size:26px;white-space:nowrap;font-weight:700;color:%s;">%s</div>' % (wcol, wtxt))
         o.append('<div style="position:absolute;left:132px;top:410px;font-size:13px;color:#9aa5ad;">Heizungsgruppe meldet: %s <b style="color:#cfd6dc;">%s</b></div>' % ("Tür" if is_door else "Fenster", gw))
         hint = B(V("w", wid), V("g", pid + "Fenster_Gruppe"), "w==1&&g==0&&'Hinweis: Heizung weiß nichts von der offenen %s'||''" % ("Tür" if is_door else "Fenster"))
         o.append('<div style="position:absolute;left:132px;top:427px;font-size:13px;font-weight:700;color:orange;">%s</div>' % hint)
