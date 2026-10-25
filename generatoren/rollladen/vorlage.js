@@ -21,7 +21,10 @@ const AKTOR = {
     'Terrasse': { adr: '00AB0000000003:4' },      // HmIP-BROLL-2, Terrassentuer Wohnzimmer (angelernt 03.10.2026; Funk schwach, -95 dBm)
     'Kueche': { adr: '00AB0000000004:4' },      // HmIP-BROLL-2, Kuechenfenster (angelernt 03.10.2026; Funk gut, -74 dBm)
     'Bad': { adr: '00AB0000000005:4' },      // HmIP-BROLL, Badezimmer 1. OG (angelernt 03.10.2026; Kanal 4 = SHUTTER_VIRTUAL_RECEIVER)
-    'Schlafzimmer': { adr: '00AB0000000006:4', max: 75 },      // HmIP-BROLL-2, Schlafzimmer 1. OG (angelernt 09.10.2026; Funk schwach, -94 dBm; ersetzt den Dummy-Raum Keller)
+    'Schlafzimmer': { adr: '00AB0000000006:4' },      // HmIP-BROLL-2, Schlafzimmer 1. OG (angelernt 09.10.2026; Funk schwach, -94 dBm; ersetzt den Dummy-Raum Keller)
+    'Balkontuer': { adr: '00AB0000000041:4' },      // HmIP-BROLL-2, Schlafzimmer Balkontuer 1. OG (angelernt 17.10.2026; Funk schwach, -89 dBm; Laufzeit 90/90 noch nicht eingemessen)
+    'Kinderzimmer': { adr: '00AB0000000042:4' },      // HmIP-BROLL-2, Kinderzimmer 1. OG (angelernt 17.10.2026; Funk -84 dBm)
+    'Buegelzimmer': { adr: '00AB0000000043:4' },      // HmIP-BROLL-2, Buegelzimmer Balkontuer 1. OG (angelernt 24.10.2026; Funk SEHR schwach -95 dBm; Laufzeit 90/90 noch nicht eingemessen)
 };
 const FAHRZEIT_S = 30, SCHRITT = 100 / FAHRZEIT_S, NACHHOL_MIN = 60, ENTSPERR_MS = 60000, MAXPROT = 40;
 const letzteAenderung = {}, letzteAbfrage = {};
@@ -123,7 +126,7 @@ async function setzeFahrt(r, f) {
     if ((await get(P + r.id + '.Fahrt')) !== f) { await setStateAsync(P + r.id + '.Fahrt', f, true); await setStateAsync(P + r.id + '.Status', f > 0 ? 'fährt auf' : f < 0 ? 'fährt zu' : 'steht', true); }
 }
 async function setzeZiel(r, wert, quelle) {
-    const z = Math.max(0, Math.min((AKTOR[r.id] && AKTOR[r.id].max) || 100, Math.round(Number(wert))));      // max = Obergrenze je Rollladen (Schlafzimmer 75 %, Besitzer 10.10.2026)
+    const z = Math.max(0, Math.min((AKTOR[r.id] && AKTOR[r.id].max) || 100, Math.round(Number(wert))));      // max = Obergrenze je Rollladen (derzeit keine gesetzt; Schlafzimmer-Grenze 75 % am 24.10.2026 auf des Besitzers Wunsch aufgehoben)
     await setStateAsync(P + r.id + '.Ziel', z, true);
     if (!simuliert(r)) { try { await aktorLevel(r, z); letzteAenderung[r.id] = Date.now(); } catch (e) { await meldung(r, 'Fehler: ' + e.message); await logge(r.name, quelle + ': ' + e.message, false); return false; } }
     return true;

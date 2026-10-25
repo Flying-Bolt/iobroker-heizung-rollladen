@@ -161,8 +161,8 @@ Je Rollladen (`ROOMS`) gibt es Datenpunkte unter `0_userdata.0.Rollladen_<Projek
 `Befehl`, `Hoch_Schritt`, `Runter_Schritt`.
 
 **Simulation oder echter Aktor:** `simuliert(r) = !AKTOR[r.id]`. Räume ohne Eintrag in `AKTOR` fahren als **Dummy** (30 s von 0 auf 100 %, 1-s-Takt).
-Mit Eintrag `{adr:'<Gerät>:<Kanal>', max:75}` gehen die Befehle per `setValue(adr,'LEVEL', Ziel/100)` an die CCU; `max` ist eine Obergrenze je Rollladen
-(z. B. Schlafzimmer 75 %). Den Kanal mit `LEVEL` bei einem HmIP-BROLL liefert der `SHUTTER_VIRTUAL_RECEIVER` (Kanal 4); der Kanal muss je Gerät geprüft werden.
+Mit Eintrag `{adr:'<Gerät>:<Kanal>', max:75}` gehen die Befehle per `setValue(adr,'LEVEL', Ziel/100)` an die CCU; `max` ist eine optionale Obergrenze je Rollladen
+(im Auslieferungsstand ist für keinen Raum eine gesetzt). Den Kanal mit `LEVEL` bei einem HmIP-BROLL liefert der `SHUTTER_VIRTUAL_RECEIVER` (Kanal 4); der Kanal muss je Gerät geprüft werden.
 
 ### 4.2 Fahren (`fahre`, `setzeZiel`)
 `auf → Ziel 100`, `zu → 0`, `z0/z25/z50/z75/z100 → Ziel n`, `stopp → Ziel = aktuelle Position` und beim echten Aktor `STOP`. Das Ziel wird auf `0…max` begrenzt und gerundet.

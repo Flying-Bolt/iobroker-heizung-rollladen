@@ -16,12 +16,27 @@
  },
  {
   "id": "Schlafzimmer",
-  "name": "Schlafzimmer 1. OG",
+  "name": "Schlafzimmerfenster",
   "accent": "#b07be0"
+ },
+ {
+  "id": "Balkontuer",
+  "name": "Schlafzimmer Balkontür",
+  "accent": "#8f6fd0"
  },
  {
   "id": "Bad",
   "name": "Bad 1. OG",
   "accent": "#3fb8a8"
+ },
+ {
+  "id": "Kinderzimmer",
+  "name": "Kinderzimmer 1. OG",
+  "accent": "#e0a23b"
+ },
+ {
+  "id": "Buegelzimmer",
+  "name": "Bügelzimmer Balkontür",
+  "accent": "#3fb8a6"
  }
 ]
