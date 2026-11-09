@@ -3,11 +3,18 @@
 // Schwiegereltern_CCU  (01.10.2026, Claude)
 // Phase 1 Bedienung (01.10.2026): Soll +/-0,5, Auto/Manuell, Boost, Profil 1-3 -- NUR nach Entsperren (Schloss, 10 s),
 // mit Grenzen (8-26 Grad), Ratenbegrenzung und Protokoll; Gesamtschalter Allgemein.Bedienung_erlaubt.
-// Lesen: die Heizungsgruppen (virtuelle
-// Geraete, XML-RPC Port 9292 /groups) der CCU3 bei den Schwiegereltern und stellt
-// sie fuer die vis-2-View "Schwiegereltern" bereit. Geraetedaten (Thermostate,
-// Fensterkontakte) kommen direkt aus hm-rpc.1.
+// Lesen: die Heizungsgruppen (virtuelle Geraete, XML-RPC Port 9292 /groups) der CCU3 bei den
+// Schwiegereltern UND die Geraete (Port 2010, getParamset auf Kanal 0 und 1) -- beides wird fuer
+// die vis-2-View "Schwiegereltern" bereitgestellt.
+// BERICHTIGT 07.11.2026: Hier stand "Geraetedaten kommen direkt aus hm-rpc.1" -- das war FALSCH,
+//   im Quelltext kam hm-rpc nie vor. Die Geraetedaten kommen aus derselben XML-RPC-Abfrage.
+//   hm-rpc.1 ist abgeschaltet, weil der Adapter an DIESER CCU keine Datenpunkte anlegen kann
+//   (Messung 07.11.2026: 0 von 100; getParamsetDescription laeuft in 30-s-Timeouts und blockiert
+//   dabei die CCU fuer alle anderen Abfragen, also auch fuer dieses Skript).
+//   Vor einem Umbau auf hm-rpc erst Handbuch Kapitel 38 lesen und die Deckung messen.
+//   Die Abfrage antwortet hier in rund 4 ms -- bewusste Entscheidung Besitzer: alte bewaehrte Technik.
 //   - alle 60 s : VALUES der Gruppen (Soll, Ist, Feuchte, Ventil, Modus ...)
+//   - alle 30 s : VALUES der Geraete (Batterie, Erreichbarkeit, Fensterkontakte)
 //   - alle 10 min: MASTER der Gruppen (Wochenprofile P1..P6)
 //   - jede Minute: Tagesprofil-Grafik (SVG) mit "jetzt"-Markierung
 // Datenpunkte: 0_userdata.0.Schwiegereltern.<Raum>.*  und  ...Allgemein.*
@@ -18,7 +25,10 @@ const P = '0_userdata.0.Schwiegereltern.';
 const ROOMS = [
     { id: 'Wohnzimmer', name: 'Wohnzimmer', group: 'INT0000001' },
     { id: 'Kueche',     name: 'Küche',      group: 'INT0000002' },
-    { id: 'Keller',     name: 'Keller',     device: '00AB0000000012' }   // ohne Heizungsgruppe: Werte direkt vom Heizkoerperthermostat
+    { id: 'Keller',     name: 'Keller',     device: '00AB0000000012' },  // ohne Heizungsgruppe: Werte direkt vom Heizkoerperthermostat
+    { id: 'Kinderzimmer', name: 'Kinderzimmer', group: 'INT0000003' },  // 1. OG, Gruppe angelegt 17.10.2026 (eTRV-2 00AB0000000044 + Fensterkontakt 00AB0000000045)
+    { id: 'Buegelzimmer', name: 'Bügelzimmer', group: 'INT0000004' },  // 1. OG, Gruppe angelegt 24.10.2026 (eTRV-2 00AB0000000046 + ZWEI Kontakte: Fenster 00AB0000000047, Tür 00AB0000000048)
+    { id: 'Dachzimmer',   name: 'Dachzimmer', group: 'INT0000005' }   // 2. OG, Gruppe angelegt 07.11.2026 (eTRV-2 00AB0000000049 + ZWEI Kontakte: Dachfenster links 00AB0000000050, rechts 00AB0000000051)
 ];
 // Quelle eines Raums: Heizungsgruppe (Port 9292) oder, wenn es keine gibt, das Thermostat selbst (Port 2010)
 function quelle(r) { return r.group ? { url: CCU_GROUPS, addr: r.group + ':1' } : { url: CCU_DEVICES, addr: r.device + ':1' }; }
@@ -31,7 +41,15 @@ const DEVICES = [
     { adr: '00AB0000000009', typ: 'HmIP-SWDM-2', fenster: true },
     { adr: '00AB0000000011', typ: 'HmIP-SWDO-2', fenster: true },   // Kuechen-Fensterkontakt, getauscht 12.10.2026 (alt: 00AB0000000016 HmIP-SWDM-2)
     { adr: '00AB0000000012', typ: 'HmIP-eTRV-2' },
-    { adr: '00AB0000000007', typ: 'HmIP-WTH-2' }
+    { adr: '00AB0000000007', typ: 'HmIP-WTH-2' },
+    { adr: '00AB0000000044', typ: 'HmIP-eTRV-2' },                  // Kinderzimmer 1. OG (17.10.2026)
+    { adr: '00AB0000000045', typ: 'HmIP-SWDO-A', fenster: true },  // Kinderzimmer-Fensterkontakt (17.10.2026)
+    { adr: '00AB0000000046', typ: 'HmIP-eTRV-2' },                  // Bügelzimmer 1. OG (24.10.2026)
+    { adr: '00AB0000000047', typ: 'HmIP-SWDO-A', fenster: true },  // Bügelzimmer Fenster (24.10.2026)
+    { adr: '00AB0000000048', typ: 'HmIP-SWDO-A', fenster: true },  // Bügelzimmer Tür (24.10.2026)
+    { adr: '00AB0000000049', typ: 'HmIP-eTRV-2' },                  // Dachzimmer 2. OG (07.11.2026); CCU-Name lautet "Büro"
+    { adr: '00AB0000000050', typ: 'HmIP-SWDO-A', fenster: true },  // Dachfenster links (07.11.2026)
+    { adr: '00AB0000000051', typ: 'HmIP-SWDO-A', fenster: true }   // Dachfenster rechts (07.11.2026)
 ];
 const master = {};          // Raum -> geparstes MASTER (Profile)
 let fehlerZaehler = 0;

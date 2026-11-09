@@ -189,12 +189,55 @@ dann: Marker = heutiges Datum            # ZUERST markieren: höchstens einmal j
 * **Zeit ändern (`zeitSchritt`):** `±n` Minuten, Ergebnis modulo 1440 (`((x % 1440) + 1440) % 1440`), also mit Überlauf über Mitternacht. Nur im entsperrten Zustand.
 * **Anzeigetexte (`aktualisiereText`):** `Heute` zeigt je Art `✓ HH:MM` (erledigt), `übersprungen (… schon vorbei)`, `ausstehend HH:MM` oder `nicht ausgeführt`.
   `Naechste` berechnet für Hoch und Runter die Minuten bis zum nächsten Auftreten (heute, wenn noch offen und nicht vorbei, sonst morgen = +1440) und nimmt das Kleinere.
-* Es gibt **bewusst nur eine Hoch- und eine Runterzeit je Tag** (kein Wochenprogramm, keine Astro-Zeiten).
+* Es gibt **bewusst nur eine Hoch- und eine Runterzeit je Tag** (kein Wochenprogramm). Die Zeit selbst kann fest sein
+  oder täglich aus dem Sonnenstand berechnet werden — siehe 4.6.
 
 ### 4.5 Bedienung
 Befehle sind nur im **entsperrten** Zustand erlaubt (Schloss **60 s**, Konstante `ENTSPERR_MS`).
 `Allgemein.Alle_Befehl` (`auf`/`zu`/`stopp`) fährt alle Rollläden. Jeder Befehl wird in `Protokoll_JSON/HTML` festgehalten. `Befehl` wird nach der Auswertung sofort wieder geleert.
 `zaehle()` füllt die Kennzahlen (`Offen` ≥ 95 %, `Zu` ≤ 5 %, `Fahrend`, `Auto_Anzahl`, `Dummy`).
+
+### 4.6 Sonnenzeiten (`sonnenZeiten`, beim Start und alle 5 Minuten)
+
+Je Raum und Richtung drei Datenpunkte: `<Art>_Sonne` (an/aus), `<Art>_Versatz` (−180…+180 min), `<Art>_Quelle` (Text).
+Steht `<Art>_Sonne` auf `true`, wird **nur `<Art>_Min` neu geschrieben** — Zeitplan (4.4), Anzeigetexte und der
+Notlauf-Plan (4.7) lesen unverändert diesen einen Wert und erben die Zeit dadurch von selbst. Das ist der Grund,
+warum die Kopplung ohne Änderung an `pruefeZeitplan` auskommt.
+
+* **Quelle:** Adapter `followthesun`, Datenpunkte `...today.sunrise_time` / `sunset_time`, vom Adapter täglich um
+  00:00:31 gesetzt. Der eigene Takt von 5 Minuten holt den Mitternachtswechsel also von selbst nach.
+* **Abgesichert:** Ist der Zeitstempel der Quelle **nicht von heute** (Adapter steht), bleibt die alte Zeit stehen und
+  `<Art>_Quelle` meldet „Wert fehlt“. Es gibt keine stille Fehlschaltung auf einen veralteten Wert.
+* **Grenzen beim Hochfahren:** Reiner Sonnenaufgang ist unbrauchbar — er risse den Rollladen Ende Juni um 05:15 auf und
+  ließe ihn Ende Dezember erst um 08:15 hoch. Deshalb begrenzen `Hoch_Frueh` und `Hoch_Spaet` das Ergebnis
+  (voreingestellt 06:30 und 08:00, je Raum über ±15-Knöpfe verstellbar). Widersprüchliche Grenzen („nicht vor“ hinter
+  „nicht nach“) werden **abgelehnt und gemeldet**, nicht stillschweigend geraten. Beim Runterfahren gibt es keine Grenzen.
+* **Eine Rechenfunktion für beide Richtungen** (`sonnenZeitRaum(r, art, s, wort)`); die Grenzen greifen nur bei `art === 'Hoch'`.
+* **Die ±-Knöpfe verschieben bei gekoppelten Räumen den Versatz**, nicht die Uhrzeit — sonst würde die Eingabe beim
+  nächsten Durchlauf überschrieben.
+
+### 4.7 Notlauf in der CCU (`notlauf/notlauf.rega`)
+
+Der Zeitplan läuft in ioBroker. Fällt der Rechner aus oder reißt die Netzverbindung zur CCU ab, übernimmt ein
+ReGa-Skript **in der Zentrale**:
+
+| Teil | wo | Aufgabe |
+|---|---|---|
+| `rollladen_zeitplan.js` | ioBroker | schreibt alle 5 min `Rollladen_Lebenszeichen` (Minuten seit Mitternacht) und bei Änderung `Rollladen_Plan` |
+| `Rollladen_Plan` | CCU-Systemvariable | `<adresse:kanal>\|<hoch_min>\|<runter_min>;…` je Raum mit Automatik |
+| `notlauf.rega` | CCU-Programm, alle 15 min | springt ein, wenn das Lebenszeichen älter als **30 min** ist |
+| `Rollladen_Notlauf` | CCU-Systemvariable | Statuszeile, bei **jedem** Lauf geschrieben |
+
+* **Zustandslos:** Das Skript merkt sich nicht, ob heute schon gefahren wurde, sondern sieht die Position des Aktors an
+  (`LEVEL < 0.9` für „noch nicht oben“). Steht der Rollladen schon richtig, passiert nichts. Damit ist es gegen jeden
+  Neustart und gegen doppelte Ausführung unempfindlich.
+* **Fahrfenster:** nur bis **90 Minuten** nach der Sollzeit, danach nicht mehr.
+* **Statuszeile bei jedem Lauf** — ohne sie sieht ein arbeitender Notlauf genauso aus wie ein toter. Steht dort ein
+  Zeitstempel, der höchstens 15 Minuten alt ist, arbeitet er.
+* **ReGa rechnet ohne Punkt-vor-Strich:** `h * 60 + m` ergibt `h * (60 + m)`. Jede Multiplikation klammern.
+
+Anlegen und prüfen: [`notlauf/ANLEITUNG.md`](../notlauf/ANLEITUNG.md). Was bei einem Ausfall zu tun ist, in Worten für
+Laien: [`notlauf/NOTFALL-VERBINDUNG.md`](../notlauf/NOTFALL-VERBINDUNG.md).
 
 ---
 

@@ -38,5 +38,22 @@
   "id": "Buegelzimmer",
   "name": "Bügelzimmer Balkontür",
   "accent": "#3fb8a6"
+ },
+ {
+  "id": "Buegelzimmerfenster",
+  "name": "Bügelzimmerfenster",
+  "accent": "#6cc24a"
+ },
+ {
+  "id": "Dachfenster_rechts",
+  "name": "Dachfenster rechts 2. OG",
+  "accent": "#e2574f",
+  "titel_px": 26
+ },
+ {
+  "id": "Dachfenster_links",
+  "name": "Dachfenster links 2. OG",
+  "accent": "#d9c23b",
+  "titel_px": 26
  }
 ]

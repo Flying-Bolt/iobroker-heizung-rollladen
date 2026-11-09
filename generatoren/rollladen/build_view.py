@@ -26,7 +26,8 @@ def teil_bedienung(r):
     pos, fa, st, si = pid + "Position", pid + "Fahrt", pid + "Status", pid + "Simuliert"
     zl = pid + "Ziel"
     o = ['<div style="position:absolute;left:0;top:0;width:500px;height:6px;background:%s;"></div>' % r["accent"],
-         '<div style="position:absolute;left:24px;top:20px;font-size:32px;font-weight:700;letter-spacing:0.5px;">%s</div>' % r["name"]]
+         '<div style="position:absolute;left:24px;top:%dpx;font-size:%dpx;font-weight:700;letter-spacing:0.5px;">%s</div>'
+         % ((20 if r.get("titel_px", 32) >= 32 else 24), r.get("titel_px", 32), r["name"])]      # lange Namen kleiner setzen, sonst laufen sie in die LIVE-Marke (01.11.2026)
     chip = B(V("s", si), "s&&'DUMMY'||'LIVE'"); chipc = B(V("s", si), "s&&'orange'||'limegreen'")
     o.append('<div style="position:absolute;right:24px;top:26px;padding:4px 14px;border-radius:15px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);font-size:14px;font-weight:700;color:%s;">%s</div>' % (chipc, chip))
     h = B(V("p", pos), "((100-Math.max(0,Math.min(100,p)))/100*130).toFixed(1)")
@@ -63,16 +64,55 @@ def teil_zeitplan(r):
     aus = B(V("a", auto), "a&&'rgba(255,255,255,0.08)'||'rgba(238,108,77,0.38)'")
     o.append(btn(120, 36, 70, "AN", bf, "auto_an", an, 15))
     o.append(btn(196, 36, 70, "AUS", bf, "auto_aus", aus, 15))
-    for art, y, sym in (("Hoch", 84, "▲ HOCH"), ("Runter", 132, "▼ RUNTER")):
-        o.append('<div style="position:absolute;left:24px;top:%dpx;font-size:13px;letter-spacing:1px;line-height:40px;color:#9aa5ad;">%s</div>' % (y, sym))
-        o.append('<div style="position:absolute;left:112px;top:%dpx;font-size:36px;font-weight:700;line-height:40px;">%s</div>' % (y, B(pid + art + "_Text")))
+    # Je Richtung: Uhrzeit, darunter die Sonnen-Kopplung. Beim Hochfahren folgen die GRENZEN (09.11.2026) --
+    # ohne sie waere der Sonnenaufgang Ende Juni 05:15 und Ende Dezember erst 08:15.
+    # Kein Sonnenzeichen in den Ueberschriften: "▼ RUNTER ☀" laeuft bei 13 px unter die 36-px-Uhrzeit.
+    def zeitzeile(art, y, sym):
+        s = ['<div style="position:absolute;left:24px;top:%dpx;font-size:13px;letter-spacing:1px;line-height:40px;color:#9aa5ad;">%s</div>' % (y, sym),
+             '<div style="position:absolute;left:112px;top:%dpx;font-size:36px;font-weight:700;line-height:40px;">%s</div>' % (y, B(pid + art + "_Text"))]
         sx = pid + art + "_Schritt"
         for i, (lab, d) in enumerate((("−30", -30), ("−5", -5), ("+5", 5), ("+30", 30))):
-            o.append(btn(228 + i * 64, y + 3, 58, lab, sx, d, "rgba(255,255,255,0.08)", 14))
-    o.append('<div style="position:absolute;left:24px;top:184px;font-size:14px;color:#cfd6dc;">%s</div>' % B(pid + "Heute"))
-    o.append('<div style="position:absolute;left:24px;top:206px;font-size:14px;font-weight:700;color:gold;">%s</div>' % B(pid + "Naechste"))
-    o.append('<div style="position:absolute;left:24px;top:230px;width:452px;font-size:12px;color:#9aa5ad;white-space:nowrap;overflow:hidden;">%s</div>' % B(pid + "Meldung"))
-    return root("".join(o), 252, "0 0 18px 18px", "border:1px solid #2b333b;border-top:none;")
+            s.append(btn(228 + i * 64, y + 3, 58, lab, sx, d, "rgba(255,255,255,0.08)", 14))
+        return "".join(s)
+
+    # 09.11.2026: Knoepfe ab 156 statt 132 -- "Sonnenuntergang" (15 Zeichen, 15 px Schrift) endet bei 143
+    # und lag vorher praktisch am AN-Knopf an (gemessen: 1 px Luft). "Sonnenaufgang" ist zwei Zeichen kuerzer,
+    # daran faellt es nicht auf. Wer das Wort aendert, misst die Breite nach.
+    def sonnenzeile(y, wort, sonne, an_bef, aus_bef, quelle):
+        ja = B(V("s", sonne), "s&&'rgba(242,193,78,0.42)'||'rgba(255,255,255,0.08)'")
+        nein = B(V("s", sonne), "s&&'rgba(255,255,255,0.08)'||'rgba(130,140,150,0.3)'")
+        return "".join((
+            '<div style="position:absolute;left:24px;top:%dpx;font-size:15px;line-height:34px;color:#cfd6dc;">%s</div>' % (y, wort),
+            btn(156, y, 64, "AN", bf, an_bef, ja, 14),
+            btn(226, y, 64, "AUS", bf, aus_bef, nein, 14),
+            '<div style="position:absolute;left:300px;top:%dpx;width:176px;height:34px;line-height:34px;font-size:13px;'
+            'color:#9aa5ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">%s</div>' % (y, B(quelle))))
+
+    # 09.11.2026 (Besitzer: "die neuen Knoepfe sonnenaufgang usw. sind zu dicht zusammen"):
+    # Vorher standen BEIDE Grenzen in EINER Zeile (y 164) -- die Knoepfe waren dadurch nur 40 px breit
+    # mit 4 px Abstand und damit die kleinsten und engsten der ganzen View (alle anderen: 58-106 px, 6 px).
+    # Jetzt eine Grenze je Zeile, Knoepfe 58 px mit 6 px Abstand wie ueberall sonst. Kostet 40 px Kartenhoehe.
+    def grenze(y, wort, zeit, schritt):
+        return "".join((
+            '<div style="position:absolute;left:24px;top:%dpx;font-size:13px;line-height:34px;color:#9aa5ad;">%s</div>' % (y, wort),
+            '<div style="position:absolute;left:112px;top:%dpx;font-size:15px;font-weight:700;line-height:34px;">%s</div>' % (y, B(zeit)),
+            btn(186, y, 58, "−15", schritt, -15, "rgba(255,255,255,0.08)", 14),
+            btn(250, y, 58, "+15", schritt, 15, "rgba(255,255,255,0.08)", 14)))
+
+    # Senkrechte Abstaende (09.11.2026, Besitzer: "es passen die Abstaende nicht"): Knoepfe sind 34 px hoch,
+    # die Zeilen stehen darum 44 px auseinander -> ueberall 10 px Luft. Vorher lag die Zeile "nicht vor"
+    # nur 36 px unter "Sonnenaufgang", also 2 px unter dessen Knoepfen -- derselbe Fehler wie waagerecht,
+    # nur senkrecht. In zeitzeile() sitzen die Knoepfe bei y+3, deshalb stehen HOCH/RUNTER 3 px hoeher.
+    o.append(zeitzeile("Hoch", 80, "▲ HOCH"))
+    o.append(sonnenzeile(127, "Sonnenaufgang", pid + "Hoch_Sonne", "sonne_hoch_an", "sonne_hoch_aus", pid + "Hoch_Quelle"))
+    o.append(grenze(171, "nicht vor", pid + "Hoch_Frueh_Text", pid + "Hoch_Frueh_Schritt"))
+    o.append(grenze(215, "nicht nach", pid + "Hoch_Spaet_Text", pid + "Hoch_Spaet_Schritt"))
+    o.append(zeitzeile("Runter", 256, "▼ RUNTER"))
+    o.append(sonnenzeile(303, "Sonnenuntergang", pid + "Runter_Sonne", "sonne_an", "sonne_aus", pid + "Runter_Quelle"))
+    o.append('<div style="position:absolute;left:24px;top:347px;font-size:14px;color:#cfd6dc;">%s</div>' % B(pid + "Heute"))
+    o.append('<div style="position:absolute;left:24px;top:369px;font-size:14px;font-weight:700;color:gold;">%s</div>' % B(pid + "Naechste"))
+    o.append('<div style="position:absolute;left:24px;top:393px;width:452px;font-size:12px;color:#9aa5ad;white-space:nowrap;overflow:hidden;">%s</div>' % B(pid + "Meldung"))
+    return root("".join(o), 420, "0 0 18px 18px", "border:1px solid #2b333b;border-top:none;")
 
 def header():
     G = P + "Allgemein."
@@ -115,9 +155,10 @@ def protokoll():
             % (FONT, LABEL, B(P + "Allgemein.Protokoll_HTML")))
 
 def footer():
-    return ('<div style="position:relative;width:1540px;height:34px;font-family:%s;font-size:13px;color:#7f8b95;">'
+    return ('<div style="position:relative;width:1540px;height:56px;font-family:%s;font-size:13px;color:#7f8b95;">'
             '<span style="position:absolute;left:0;top:4px;">Rollläden mit Kennzeichen LIVE fahren den echten Aktor, die mit DUMMY werden simuliert (30 s von zu bis offen). Aktoren trägt man im Skript Schwiegereltern_Rollladen in der Tabelle AKTOR ein, neue Räume in raeume.json. '
-            'Der Zeitplan läuft auf ioBroker-Rechner: bei Ausfall zur Schaltzeit wird bis 60 Minuten später nachgeholt.</span></div>' % FONT)
+            'Der Zeitplan läuft auf ioBroker-Rechner: bei Ausfall zur Schaltzeit wird bis 60 Minuten später nachgeholt. '
+            'Steht „Sonnenuntergang“ auf AN, rechnet das Skript die Runter-Zeit jeden Tag neu (heute dunkel um 16:45, im Juni erst um 21:30); die Knöpfe −30/−5/+5/+30 verschieben dann den Abstand zum Sonnenuntergang. Ebenso „Sonnenaufgang“ für das Hochfahren (09.11.2026) – dort halten die Grenzen „nicht vor“ und „nicht nach“ die Zeit im Rahmen, weil die Sonne Ende Juni um 05:15 und Ende Dezember erst um 08:15 aufgeht.</span></div>' % FONT)
 
 def widget(html, left, top, width, height):
     return {"tpl": "tplHtml",
@@ -134,13 +175,13 @@ if __name__ == "__main__":
     add(header(), 30, 14, 1540, 92)
     for i, t in enumerate(tiles()): add(t, 30 + i * 390, 124, 370, 108)
     X = [30, 550, 1070]
-    ZEILEN = (len(rooms) + 2) // 3; ZH = 272 + 252 + 16          # 3 Karten je Zeile, weitere Zeilen darunter
+    ZEILEN = (len(rooms) + 2) // 3; ZH = 272 + 420 + 16          # 3 Karten je Zeile (Zeitplan 400 px seit 09.11.2026 nachmittags: Grenzen auf zwei Zeilen)
     for i, r in enumerate(rooms):
         yy = 252 + (i // 3) * ZH
         add(teil_bedienung(r), X[i % 3], yy, 500, 272)
-        add(teil_zeitplan(r), X[i % 3], yy + 272, 500, 252)
-    y = 252 + (ZEILEN - 1) * ZH + 272 + 252 + 28
+        add(teil_zeitplan(r), X[i % 3], yy + 272, 500, 420)
+    y = 252 + (ZEILEN - 1) * ZH + 272 + 420 + 28
     add(protokoll(), 30, y, 1540, 170); y += 170 + 16
-    add(footer(), 30, y, 1540, 34)
-    json.dump({"widgets": widgets, "sizey": y + 34 + 30}, open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
-    print("Rollladen (Schwiegereltern):", len(widgets), "Widgets, sizey", y + 64)
+    add(footer(), 30, y, 1540, 56)
+    json.dump({"widgets": widgets, "sizey": y + 56 + 30}, open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    print("Rollladen (Schwiegereltern):", len(widgets), "Widgets, sizey", y + 86)

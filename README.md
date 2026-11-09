@@ -11,7 +11,7 @@ Es wurde für das Haus einer Familie gebaut und dort 2026 in Betrieb genommen. A
 | Teil | Skript | View | Zweck |
 |---|---|---|---|
 | **Heizung** | `skripte/heizung_ccu.js`, `skripte/heizung_karten.js` | `views/heizung_raeume.json` | Räume nach Geschossen: Ist/Soll, Ventil, Fenster, Profil-Verlauf, Soll ± 0,5 °C, Auto/Manuell, Boost, Profil 1–3 |
-| **Rollladen** | `skripte/rollladen_zeitplan.js` | `views/rollladen.json` | je Raum **einmal hoch, einmal runter** pro Tag, Uhrzeit einstellbar, Maximalgrenze je Raum |
+| **Rollladen** | `skripte/rollladen_zeitplan.js` | `views/rollladen.json` | je Raum **einmal hoch, einmal runter** pro Tag — feste Uhrzeit **oder gekoppelt an Sonnenauf-/untergang** (mit Grenzen), dazu ein **Notlauf in der CCU** für den Fall, dass ioBroker ausfällt |
 | **Thermostat-Wächter** | `skripte/thermostat_waechter.js` | `views/thermostate.json` | meldet Ventilfehler, schwache Batterie, nicht erreichbar per Telegram und als Banner |
 | **Batterie-Ampel** | `skripte/batterien_uebersicht.js` | `views/batterie.json` | rot/gelb/grün je Gerät, Schwelle **je Zelle** (nicht je Gerät) |
 
@@ -45,7 +45,15 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
   Die Firewall der CCU muss XML-RPC für ioBroker freigeben („eingeschränkt“, nicht „offen“).
 * **Bedienung abgesichert:** Die View hat keine Anmeldung. Deshalb gibt es ein **Schloss** (10 s Entsperrung), Grenzen **8–26 °C**,
   höchstens **20 Befehle in 10 Minuten je Raum** und einen Gesamtschalter `Bedienung_erlaubt`. Nach jedem Skriptstart ist alles gesperrt.
-* **Rollladen:** Der Zeitplan läuft **in ioBroker**, nicht in der CCU. Fällt ioBroker zur Schaltzeit aus, wird innerhalb von 60 Minuten nachgeholt.
+* **Rollladen:** Der Zeitplan läuft **in ioBroker**, nicht in der CCU. Fällt ioBroker zur Schaltzeit nur kurz aus, wird innerhalb
+  von 60 Minuten nachgeholt. Fällt er **länger** aus — oder reißt die Netzverbindung zur CCU ab — übernimmt der
+  **[Notlauf in der CCU](notlauf/)**: Bleibt das Lebenszeichen über 30 Minuten aus, fährt die Zentrale selbst, geprüft alle
+  15 Minuten, Fahrten bis 90 Minuten nach der Sollzeit. Er ist **zustandslos** — er sieht die Position des Aktors an, statt
+  sich zu merken, ob heute schon gefahren wurde.
+* **Sonnenzeiten:** Hoch- und Runter-Zeit lassen sich je Raum an Sonnenauf- und ‑untergang koppeln (Quelle: Adapter
+  `followthesun`, Versatz je Raum einstellbar). Beim **Hochfahren** begrenzen zwei Schranken das Ergebnis (voreingestellt
+  06:30–08:00), sonst risse der Rollladen Ende Juni um 05:15 auf. Berechnet wird nur `<Richtung>_Min` — Zeitplan, Anzeige
+  und Notlauf-Plan lesen unverändert diesen einen Wert.
 
 > **Hinweis zu `views/`:** Die JSON-Dateien sind Exporte der laufenden Views (mit Karten-Bindungen). `views/heizung_raeume.json` enthält zusätzlich einen
 > Shelly-Sensorblock, dessen Skript nicht Teil des Pakets ist. Für den eigenen Einbau besser die **Generator-Ausgabe** (`generatoren/ausgabe/vis-views.json`) verwenden.
@@ -75,6 +83,20 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
 * **Batterie nach Zellen bewerten:** gelb unter 1,25 V je Zelle, rot unter 1,1 V; Fensterkontakt SWDO 1 Zelle, Türschloss DLD 3, sonst 2.
 * **CCU-Programme statt Direktverknüpfung** für „Licht aus nach x Sekunden“: `ON_TIME` bei einer Sensor-Verknüpfung ist nur einmalig wirksam.
 * **ReGa-Skript:** verkettete Methodenaufrufe in einer Zeile lassen das ganze Skript kommentarlos scheitern. Erst Variable, dann Aufruf.
+* **ReGa rechnet ohne Punkt-vor-Strich.** `h * 60 + m` ergibt `h * (60 + m)`. Jede Multiplikation klammern.
+* **Ein Wächter ohne Lebenszeichen ist schlechter als keiner.** Der Notlauf schrieb anfangs nur bei einer Ersatzfahrt.
+  Eine Woche lang sah es aus, als liefe er nicht — tatsächlich lief er, hatte nur nichts zu melden. Jetzt schreibt er bei
+  **jedem** Lauf einen Zeitstempel. Und: nach dem Ändern einer `.rega`-Datei prüfen, was wirklich **in der CCU** steht.
+* **Zeitsteuerung in der CCU hat zwei Felder.** Das Intervall (`period`) allein genügt nicht — es gibt zusätzlich eine
+  Zeitspanne (`calduration`). Stand sie auf 30 Minuten, lief ein „alle 15 Minuten“-Programm nur zweimal am Tag, ohne dass
+  man es der Programmliste ansah. Für ganztägig: `calduration` 86400 und `time` 00:00.
+* **vis-2: ein zu kleines Widget schneidet nichts ab — es nimmt den Scrollweg.** Die Elternkette hat `overflow: visible`,
+  der Inhalt wird also gezeichnet, aber der scrollbare Bereich richtet sich nach dem Widget. Ergebnis: sichtbar wäre es,
+  hinkommen kann man nicht. Prüfen mit `document.documentElement.scrollHeight - window.innerHeight` gegen die unterste
+  Elementkante, nicht durch Nachrechnen der Container-Höhe.
+* **Neue Bedienelemente an den vorhandenen messen, nicht an der freien Fläche** — in beiden Richtungen. Zwei neu
+  eingefügte Knöpfe waren 42 px breit mit 2 px Abstand, während alle anderen der View 58–106 px mit 4–6 px hatten; nach der
+  Korrektur lagen die Zeilen senkrecht 2 px auseinander. Faustregel: Zeilenabstand = Knopfhöhe + 10 px.
 
 ## Zeitsteuerung (Cron)
 
@@ -92,6 +114,18 @@ Nur die **Zeitzone** des Rechners muss stimmen.
 Vorlagen für `heizung_karten.js`; `sw_nav.py` baut die Navigationsleiste; `deploy_raeume.py` spielt ein (sichert vorher);
 `cdp_steps.py` macht Screenshots der echten View per Headless-Chrome (nötig, weil `--screenshot` nur den Ladekreis zeigt – 14 s warten).
 Die Pfade in den Generatoren sind Beispiele und müssen angepasst werden.
+
+`generatoren/rollladen/build_view.py` erzeugt die Rollladen-View, `build_script.py` das Zeitplan-Skript aus `vorlage.js`
+und `raeume.json`.
+
+## Notlauf in der CCU
+
+`notlauf/` enthält die Absicherung für den Fall, dass ioBroker oder die Netzverbindung ausfällt:
+
+* [`notlauf/notlauf.rega`](notlauf/notlauf.rega) – das ReGa-Skript, das in der CCU läuft
+* [`notlauf/ANLEITUNG.md`](notlauf/ANLEITUNG.md) – wie man das Programm in der CCU anlegt und prüft, ob es arbeitet
+* [`notlauf/NOTFALL-VERBINDUNG.md`](notlauf/NOTFALL-VERBINDUNG.md) – **Notfallblatt für Laien:** was bei einem Ausfall
+  der Verbindung mit Heizung und Rollläden passiert, was man tun muss und was nach der Rückkehr zu prüfen ist
 
 ## Lizenz
 

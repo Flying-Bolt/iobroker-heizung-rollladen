@@ -32,7 +32,10 @@ const THERMOSTATE = [
     { key: 'Haus_Keller',       name: 'Keller',           ort: 'Haus', adr: '00AB0000000019' },
     { key: 'SW_Wohnzimmer',     name: 'Wohnzimmer (Schwiegereltern)', ort: 'Schwiegereltern', raum: 'Wohnzimmer', adr: '00AB0000000008' },
     { key: 'SW_Kueche',         name: 'Küche (Schwiegereltern)',      ort: 'Schwiegereltern', raum: 'Kueche',     adr: '00AB0000000010' },
-    { key: 'SW_Keller',         name: 'Keller (Schwiegereltern)',     ort: 'Schwiegereltern', raum: 'Keller',     adr: '00AB0000000012' }
+    { key: 'SW_Keller',         name: 'Keller (Schwiegereltern)',     ort: 'Schwiegereltern', raum: 'Keller',     adr: '00AB0000000012' },
+    { key: 'SW_Kinderzimmer',   name: 'Kinderzimmer (Schwiegereltern)', ort: 'Schwiegereltern', raum: 'Kinderzimmer', adr: '00AB0000000044' },  // 17.10.2026
+    { key: 'SW_Buegelzimmer',   name: 'Bügelzimmer (Schwiegereltern)', ort: 'Schwiegereltern', raum: 'Buegelzimmer', adr: '00AB0000000046' },  // 24.10.2026
+    { key: 'SW_Dachzimmer',     name: 'Dachzimmer (Schwiegereltern)',  ort: 'Schwiegereltern', raum: 'Dachzimmer',   adr: '00AB0000000049' }   // 09.11.2026, 2. OG; Geraet heisst in der CCU "Buero", nur die Gruppe INT0000005 traegt den Raumnamen
 ];
 for (const t of THERMOSTATE) {
     if (t.ort === 'Haus') {
@@ -132,7 +135,7 @@ function karte(i, x, y) {
 function renderSeite(infos, fehler, stand) {
     const n = infos.length, gut = infos.filter(i => i.ok).length;
     const o = [];
-    o.push('<div style="position:relative;width:1540px;height:1040px;font-family:' + FONT + ';color:#e9eef2;">');
+    o.push('@@KOPF@@');
     o.push('<div style="position:absolute;left:0;top:10px;font-size:46px;font-weight:700;letter-spacing:1px;">Heizkörper-Thermostate</div>');
     o.push('<div style="position:absolute;left:2px;top:62px;font-size:17px;color:#8a96a0;letter-spacing:0.5px;">Adapterstatus, Batterie und Erreichbarkeit · Haus und Schwiegereltern</div>');
     o.push('<div style="position:absolute;right:0;top:50px;font-size:14px;color:#8a96a0;">Stand ' + esc(stand) + '</div>');
@@ -153,6 +156,11 @@ function renderSeite(infos, fehler, stand) {
         + '<span style="color:' + FARBE.green + ';">● grün</span> = Adapterlauf abgeschlossen (OK) · <span style="color:' + FARBE.orange + ';">● orange</span> = Adapterlauf fehlt, steht an oder läuft; kurzer Funkausfall · <span style="color:' + FARBE.red + ';">● rot</span> = Ventil schwergängig/Hub/Position fehlerhaft oder nicht erreichbar. '
         + 'Batterie-Symbol rot = Batterie schwach. Meldung per Telegram bei neuem Fehler und täglich 09:00 als Erinnerung; Adapterlauf-Zwischenzustände und Funkausfälle zählen erst nach 30 Minuten. Schwiegereltern-Werte sind Raumwerte der CCU (ein Wert je Raum).</div>');
     o.push('</div>');
+    // Hoehe NICHT fest verdrahten (09.11.2026): bis dahin stand hier 1040px, waehrend der Inhalt
+    // mit 16 Thermostaten bis 1298px reichte -- die unterste Reihe war nicht einmal scrollbar erreichbar.
+    // y steht nach der letzten Gruppe; +86 deckt die dreizeilige Fusszeile (12px padding + 3x19px line-height) ab.
+    const hoehe = y + 86;
+    o[0] = '<div style="position:relative;width:1540px;height:' + hoehe + 'px;font-family:' + FONT + ';color:#e9eef2;">';
     return o.join('');
 }
 

@@ -1,0 +1,63 @@
+! ============================================================================
+! Rollladen-Notlauf (25.10.2026, Claude) -- laeuft IN der CCU der Schwiegereltern
+!
+! Der Zeitplan liegt normalerweise im ioBroker auf ioBroker-Rechner. Dieses Skript springt nur ein,
+! wenn von dort laenger als VERZUG Minuten kein Lebenszeichen kam (ioBroker-Rechner aus, Tunnel weg).
+! Es ist zustandslos: statt sich zu merken, ob heute schon gefahren wurde, sieht es die
+! Position des Aktors an. Steht er schon richtig, passiert nichts.
+!
+! Variablen (vom ioBroker gepflegt):
+!   Rollladen_Lebenszeichen  Minuten seit Mitternacht des letzten Lebenszeichens
+!   Rollladen_Plan           "<adresse:kanal>|<hoch_min>|<runter_min>;..."
+!   Rollladen_Notlauf        Protokoll der letzten Ersatzfahrt (dieses Skript schreibt es)
+!
+! ACHTUNG ReGa: kein Punkt-vor-Strich! "h * 60 + m" rechnet h * (60 + m).
+!               Jede Multiplikation klammern.
+! ============================================================================
+integer VERZUG  = 30;   ! Minuten ohne Lebenszeichen, ab denen die CCU uebernimmt
+integer FENSTER = 90;   ! nur so lange nach der Sollzeit wird nachgeholt
+
+object oLeben = dom.GetObject(ID_SYSTEM_VARIABLES).Get("Rollladen_Lebenszeichen");
+object oPlan  = dom.GetObject(ID_SYSTEM_VARIABLES).Get("Rollladen_Plan");
+object oProt  = dom.GetObject(ID_SYSTEM_VARIABLES).Get("Rollladen_Notlauf");
+
+if (oLeben && oPlan && oProt) {
+  integer iJetzt = (system.Date("%H").ToInteger() * 60) + system.Date("%M").ToInteger();
+  integer iAlter = iJetzt - oLeben.Value().ToInteger();
+  if (iAlter < 0) { iAlter = iAlter + 1440; }
+
+  string sStatus = "";
+  if ((oLeben.Value() >= 0) && (iAlter <= VERZUG)) {
+    ! ioBroker lebt -- nichts tun ausser melden, dass geprueft wurde
+    sStatus = "ioBroker lebt (" # iAlter # " min), nichts zu tun";
+  } else {
+    string sMeldung = "";
+    integer iGefahren = 0;
+    string sEintrag;
+    foreach(sEintrag, oPlan.Value().Split(";")) {
+      string  sAdr    = sEintrag.StrValueByIndex("|", 0);
+      integer iHoch   = sEintrag.StrValueByIndex("|", 1).ToInteger();
+      integer iRunter = sEintrag.StrValueByIndex("|", 2).ToInteger();
+      object  oLevel  = dom.GetObject("HmIP-RF." # sAdr # ".LEVEL");
+      if (oLevel) {
+        if ((iJetzt >= iHoch) && (iJetzt < (iHoch + FENSTER)) && (oLevel.Value() < 0.9)) {
+          oLevel.State(1.0);
+          iGefahren = iGefahren + 1;
+          sMeldung = sMeldung # sAdr # " hoch; ";
+        }
+        if ((iJetzt >= iRunter) && (iJetzt < (iRunter + FENSTER)) && (oLevel.Value() > 0.1)) {
+          oLevel.State(0.0);
+          iGefahren = iGefahren + 1;
+          sMeldung = sMeldung # sAdr # " runter; ";
+        }
+      }
+    }
+    if (iGefahren > 0) {
+      sStatus = "ERSATZFAHRT (ioBroker " # iAlter # " min stumm): " # sMeldung;
+    } else {
+      sStatus = "ioBroker " # iAlter # " min stumm, aber kein Fahrfenster offen";
+    }
+  }
+  ! Bei JEDEM Lauf schreiben -- sonst sieht man nie, ob der Notlauf ueberhaupt arbeitet.
+  oProt.State(system.Date("%d.%m.%Y %H:%M") # " | " # sStatus);
+}

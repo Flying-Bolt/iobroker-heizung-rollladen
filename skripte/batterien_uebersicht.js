@@ -2,10 +2,18 @@
 // ============================================================================
 // Batterien_Uebersicht (02.10.2026, Claude)
 // Batterieampel aller batteriebetriebenen Geraete BEIDER CCU3 (Haus 192.168.1.99, Schwiegereltern 192.168.1.99).
-// Liest je Geraet Kanal 0 (OPERATING_VOLTAGE, LOW_BAT, UNREACH, RSSI_DEVICE) per XML-RPC (nur lesend), alle 5 Minuten.
+// Liest je Geraet Kanal 0 (OPERATING_VOLTAGE, LOW_BAT, UNREACH, RSSI_DEVICE), alle 5 Minuten.
+// Haus (07.11.2026): die Werte kommen aus hm-rpc.0 -- die CCU3 funkt jede Aenderung sofort dorthin,
+//   damit entfallen 27 XML-RPC-Einzelabfragen je Durchlauf. Die XML-RPC-Abfrage bleibt als
+//   Rueckfallebene JE GERAET (fehlt ein Datenpunkt oder hat er keinen Wert, wird das Geraet
+//   wie bisher einzeln gelesen). Zusaetzlich loest eine Aenderung von LOW_BAT oder UNREACH
+//   in hm-rpc.0 ein Neuzeichnen aus (30 s Sammelfrist).
+// Schwiegereltern: unveraendert per XML-RPC -- hm-rpc.1 kann dort keine Datenpunkte liefern
+//   (Messung 07.11.2026: 0 von 100; Instanz abgeschaltet).
 // Ampel: ROT = die Zentrale meldet LOW_BAT oder weniger als 1,10 V je Zelle; GELB = weniger als 1,25 V je Zelle; GRUEN sonst.
 // Zellen je Typ: Fensterkontakt HmIP-SWDO 1, Tuerschloss HmIP-DLD 3, alle anderen 2 (Heizkoerperthermostate, Wandthermostate, Melder).
-// Die Geraeteliste ist feststehend (aus der Erhebung vom 02.10.2026); ein neues Batteriegeraet muss in CCUS ergaenzt werden.
+// Die Geraeteliste ist feststehend (Erhebung 02.10.2026, danach von Hand nachgezogen: Kinderzimmer 17.10.,
+//   Buegelzimmer 24.10., Dachzimmer 07.11.2026); ein neues Batteriegeraet muss in CCUS ergaenzt werden.
 // Letzte Meldung je Geraet: Zeitstempel von OPERATING_VOLTAGE per ReGa (Port 8181, nur lesend), 1 Aufruf je Zentrale (12.10.2026).
 //   Farbe der Spalte (nur Hinweis, nicht Ampel): bis 6 h grau, 6-24 h gelb, ueber 24 h rot.
 // Datenpunkte: 0_userdata.0.Batterien.<Haus|Schwiegereltern>.* und ...Allgemein.*   (HTML-Tabellen fuer die View "Batterie")
@@ -15,6 +23,7 @@ const CCUS = [
  {
   "id": "Haus",
   "host": "192.168.1.99",
+  "rpc": "hm-rpc.0.",
   "geraete": [
    {
     "adr": "00AB0000000017",
@@ -219,6 +228,54 @@ const CCUS = [
     "typ": "HmIP-eTRV-B-2 R4M",
     "ort": "Wohnzimmer",
     "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000044",
+    "typ": "HmIP-eTRV-2 I9F",
+    "ort": "Kinderzimmer",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000045",
+    "typ": "HmIP-SWDO-A",
+    "ort": "Kinderzimmer",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000046",
+    "typ": "HmIP-eTRV-2 I9F",
+    "ort": "Bügelzimmer",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000047",
+    "typ": "HmIP-SWDO-A",
+    "ort": "Bügelzimmer",
+    "bez": "Fensterkontakt"
+   },
+   {
+    "adr": "00AB0000000048",
+    "typ": "HmIP-SWDO-A",
+    "ort": "Bügelzimmer",
+    "bez": "Türkontakt"
+   },
+   {
+    "adr": "00AB0000000049",
+    "typ": "HmIP-eTRV-2 I9F",
+    "ort": "Dachzimmer",
+    "bez": "Heizkörperthermostat"
+   },
+   {
+    "adr": "00AB0000000050",
+    "typ": "HmIP-SWDO-A",
+    "ort": "Dachzimmer",
+    "bez": "Dachfenster links"
+   },
+   {
+    "adr": "00AB0000000051",
+    "typ": "HmIP-SWDO-A",
+    "ort": "Dachzimmer",
+    "bez": "Dachfenster rechts"
    }
   ]
  }
@@ -243,6 +300,19 @@ function rpcGet(host, adr) {
             resolve(out);
         });
     });
+}
+// Werte eines Geraets aus hm-rpc lesen (Haus). Gibt null zurueck, wenn der Adapter die
+// Spannung nicht fuehrt -- dann faellt abfrage() fuer DIESES Geraet auf rpcGet zurueck.
+async function hmrpcGet(praefix, adr) {
+    const s = await getStateAsync(praefix + adr + '.0.OPERATING_VOLTAGE');
+    if (!s || s.val === null || s.val === undefined) return null;
+    const lese = async name => { const x = await getStateAsync(praefix + adr + '.0.' + name); return x ? x.val : undefined; };
+    return {
+        OPERATING_VOLTAGE: Number(s.val),
+        LOW_BAT: !!(await lese('LOW_BAT')),
+        UNREACH: !!(await lese('UNREACH')),
+        RSSI_DEVICE: await lese('RSSI_DEVICE')
+    };
 }
 function regaZeiten(host, adrs) {
     const sc = 'string l="' + adrs.join(',') + '"; string a; foreach(a, l.Split(",")){ object o=dom.GetObject("HmIP-RF."#a#":0.OPERATING_VOLTAGE"); if(o){WriteLine(a#"|"#o.Timestamp());}else{WriteLine(a#"|-");} }';
@@ -298,13 +368,15 @@ async function init() {
 async function abfrage() {
     const summe = { n: 0, g: 0, y: 0, r: 0 };
     const fehler = [];
+    const rueckfall = [];
     for (const c of CCUS) {
         const zeilen = [];
         const zeiten = await regaZeiten(c.host, c.geraete.map(x => x.adr));
         if (!Object.keys(zeiten).length) fehler.push(c.id + ': keine Zeitstempel (ReGa)');
         for (const g of c.geraete) {
             try {
-                const v = await rpcGet(c.host, g.adr);
+                let v = c.rpc ? await hmrpcGet(c.rpc, g.adr) : null;
+                if (!v) { v = await rpcGet(c.host, g.adr); if (c.rpc) rueckfall.push(g.adr); }
                 zeilen.push({ adr: g.adr, typ: g.typ, ort: g.ort, bez: g.bez, v: v.OPERATING_VOLTAGE, s: batterieStatus(g.typ, v.OPERATING_VOLTAGE, !!v.LOW_BAT), unreach: !!v.UNREACH, rssi: v.RSSI_DEVICE, ts: zeiten[g.adr] });
             } catch (e) {
                 zeilen.push({ adr: g.adr, typ: g.typ, ort: g.ort, bez: g.bez, v: 0, s: -1, unreach: true });
@@ -330,10 +402,21 @@ async function abfrage() {
     await setStateAsync(P + 'Allgemein.Fehler', fehler.join(' | ').slice(0, 400), true);
     if (summe.r > 0) log('Batterien_Uebersicht: ' + summe.r + ' Geraet(e) mit roter Batterieampel', 'warn');
     if (fehler.length) log('Batterien_Uebersicht: ' + fehler.length + ' Geraet(e) nicht lesbar: ' + fehler[0], 'warn');
+    if (rueckfall.length) log('Batterien_Uebersicht: ' + rueckfall.length + ' Haus-Geraet(e) nicht in hm-rpc.0, per XML-RPC gelesen: ' + rueckfall.join(', '), 'warn');
 }
 (async () => {
     await init();
     await abfrage();
     schedule('2,7,12,17,22,27,32,37,42,47,52,57 * * * *', abfrage);
-    log('Batterien_Uebersicht gestartet: ' + CCUS.map(c => c.id + ' ' + c.geraete.length).join(', ') + ' Geraete', 'info');
+    // Live aus hm-rpc.0: meldet ein Haus-Geraet LOW_BAT oder UNREACH, wird nicht bis zum
+    // naechsten Takt gewartet. Sammelfrist 30 s, damit mehrere Meldungen einen Durchlauf teilen.
+    const hausAdressen = {};
+    (CCUS.find(c => c.rpc) || { geraete: [] }).geraete.forEach(g => { hausAdressen[g.adr] = true; });
+    let sammler = null;
+    on({ id: /^hm-rpc\.0\.[0-9A-F]+\.0\.(LOW_BAT|UNREACH)$/, change: 'ne' }, obj => {
+        const adr = obj.id.split('.')[2];
+        if (!hausAdressen[adr] || sammler) return;
+        sammler = setTimeout(() => { sammler = null; abfrage(); }, 30000);
+    });
+    log('Batterien_Uebersicht gestartet: ' + CCUS.map(c => c.id + ' ' + c.geraete.length + (c.rpc ? ' (live aus ' + c.rpc.slice(0, -1) + ')' : ' (XML-RPC)')).join(', ') + ' Geraete', 'info');
 })();

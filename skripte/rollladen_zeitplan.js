@@ -1,19 +1,28 @@
 'use strict';
 // ============================================================================
-// Schwiegereltern_Rollladen  (02.10.2026, Claude) (Dummy-Modus ohne Aktor, mit Aktor echte Fahrt)
+// Schwiegereltern_Rollladen  (02.10.2026, Claude) -- elf Aktoren im Betrieb (Stand 01.11.2026: + Dachfenster rechts/links 2. OG), ohne AKTOR-Eintrag laeuft ein Raum als Dummy
 // Rollladensteuerung fuer das Haus der Schwiegereltern (CCU3 192.168.1.99) mit ZEITPLAN: je Rollladen EINMAL pro Tag hoch
 // und EINMAL runter, Uhrzeiten in der View einstellbar. Datenpunkte: 0_userdata.0.Rollladen_Schwiegereltern.<Raum>.*
 //   Position 0..100 % (0 = zu, 100 = ganz offen, wie LEVEL der HmIP-Rollladenaktoren), Ziel, Fahrt (-1 zu, 0 steht, 1 auf), Status
 //   Auto (Zeitplan an/aus), Hoch_Min / Runter_Min (Minuten seit Mitternacht), Hoch_Text / Runter_Text (HH:MM), Naechste, Heute
-// Befehle (nur nach Entsperren, 60 s): Befehl = auf | zu | stopp | z0 z25 z50 z75 z100 | auto_an | auto_aus;
+// Befehle (nur nach Entsperren, 60 s): Befehl = auf | zu | stopp | z0 z25 z50 z75 z100 | auto_an | auto_aus | sonne_an | sonne_aus | sonne_hoch_an | sonne_hoch_aus;
 //   Hoch_Schritt / Runter_Schritt = Minuten-Aenderung (+5, -30 ...); Allgemein.Alle_Befehl = auf | zu | stopp
 // OHNE Eintrag in AKTOR wird die Fahrt SIMULIERT (30 s). Mit Eintrag werden Befehle ueber XML-RPC an den echten Aktor gesendet
 // (Port 2010 der CCU3, nicht ueber ioBroker-Objekte) und dessen Position gelesen. Der Weg "echter Aktor" ist im Betrieb erprobt (HmIP-BROLL/-BROLL-2, Kanal 4 = SHUTTER_VIRTUAL_RECEIVER).
 //   AKTOR = { 'Wohnzimmer': { adr: '<Geraeteadresse>:<Kanal mit LEVEL>' } }   (Kanal mit finde_level.py ermitteln)
+// RUNTER BEI SONNENUNTERGANG (08.11.2026): Runter_Sonne = true koppelt die Runter-Zeit an den Sonnenuntergang
+//   (Runter_Min wird dann taeglich aus SUNSET_DP + Runter_Versatz berechnet). Zeitplan, Anzeige und der
+//   Notlauf-Plan der CCU lesen weiterhin nur Runter_Min und bleiben darum unveraendert.
+// HOCH BEI SONNENAUFGANG (09.11.2026): Hoch_Sonne = true koppelt die Hoch-Zeit an den Sonnenaufgang
+//   (Hoch_Min aus SUNRISE_DP + Hoch_Versatz). GRENZEN Hoch_Frueh / Hoch_Spaet begrenzen das Ergebnis,
+//   weil der Sonnenaufgang im Juni um 05:15 und Ende Dezember erst um 08:15 liegt; voreingestellt
+//   06:30 bis 08:00, je Raum ueber Hoch_Frueh_Schritt / Hoch_Spaet_Schritt verstellbar.
 // Der Zeitplan laeuft HIER (ioBroker-Rechner), nicht in der CCU: faellt der Tunnel oder ioBroker-Rechner zur Zeit aus, wird innerhalb von 60 Minuten nachgeholt.
 // ============================================================================
 const P = '0_userdata.0.Rollladen_Schwiegereltern.';
 const CCU = 'http://192.168.1.99:2010/';
+const SUNSET_DP = 'followthesun.0.short term.today.sunset_time';      // Sonnenuntergang heute als Zeitstempel; der Adapter followthesun setzt ihn taeglich um 00:00:31
+const SUNRISE_DP = 'followthesun.0.short term.today.sunrise_time';    // Sonnenaufgang heute, gleiche Quelle und gleicher Takt
 const ROOMS = [
     { id: 'Wohnzimmer', name: 'Wohnzimmer' },
     { id: 'Terrasse', name: 'Terrassentür' },
@@ -22,7 +31,10 @@ const ROOMS = [
     { id: 'Balkontuer', name: 'Schlafzimmer Balkontür' },
     { id: 'Bad', name: 'Bad 1. OG' },
     { id: 'Kinderzimmer', name: 'Kinderzimmer 1. OG' },
-    { id: 'Buegelzimmer', name: 'Bügelzimmer Balkontür' }
+    { id: 'Buegelzimmer', name: 'Bügelzimmer Balkontür' },
+    { id: 'Buegelzimmerfenster', name: 'Bügelzimmerfenster' },
+    { id: 'Dachfenster_rechts', name: 'Dachfenster rechts 2. OG' },
+    { id: 'Dachfenster_links', name: 'Dachfenster links 2. OG' }
 ];
 const AKTOR = {
     // 'Wohnzimmer': { adr: '00AB0000000001:4' },
@@ -34,6 +46,9 @@ const AKTOR = {
     'Balkontuer': { adr: '00AB0000000041:4' },      // HmIP-BROLL-2, Schlafzimmer Balkontuer 1. OG (angelernt 17.10.2026; Funk schwach, -89 dBm; Laufzeit 90/90 noch nicht eingemessen)
     'Kinderzimmer': { adr: '00AB0000000042:4' },      // HmIP-BROLL-2, Kinderzimmer 1. OG (angelernt 17.10.2026; Funk -84 dBm)
     'Buegelzimmer': { adr: '00AB0000000043:4' },      // HmIP-BROLL-2, Buegelzimmer Balkontuer 1. OG (angelernt 24.10.2026; Funk SEHR schwach -95 dBm; Laufzeit 90/90 noch nicht eingemessen)
+    'Buegelzimmerfenster': { adr: '00AB0000000052:4' },      // HmIP-BROLL-2, Buegelzimmer Fenster 1. OG (angelernt 31.10.2026; Funk -83 dBm; Laufzeit 90/90 Werk, bewusst nicht eingemessen)
+    'Dachfenster_rechts': { adr: '00AB0000000053:4' },      // HmIP-BROLL-2, Dachfenster rechts 2. OG (angelernt 01.11.2026; Funk SEHR schwach -97 dBm; Laufzeit 90/90 Werk, nicht eingemessen)
+    'Dachfenster_links': { adr: '00AB0000000054:4' },      // HmIP-BROLL-2, Dachfenster links 2. OG (angelernt 01.11.2026; Funk schwach -90 dBm; Laufzeit 90/90 Werk, nicht eingemessen)
 };
 const FAHRZEIT_S = 30, SCHRITT = 100 / FAHRZEIT_S, NACHHOL_MIN = 60, ENTSPERR_MS = 60000, MAXPROT = 40;
 const letzteAenderung = {}, letzteAbfrage = {};
@@ -58,6 +73,18 @@ async function init() {
             ['Runter_Min', 'number', 'value', 'Runterfahren um (Minuten seit Mitternacht)', 1200, false],
             ['Hoch_Text', 'string', 'text', 'Hochfahren um (HH:MM)', '07:30', false],
             ['Runter_Text', 'string', 'text', 'Runterfahren um (HH:MM)', '20:00', false],
+            ['Hoch_Sonne', 'boolean', 'indicator', 'Hochfahren bei Sonnenaufgang statt zur festen Uhrzeit', false, false],
+            ['Hoch_Versatz', 'number', 'value', 'Versatz zum Sonnenaufgang in Minuten (negativ = vorher)', 0, false],
+            ['Hoch_Quelle', 'string', 'text', 'Woher die Hoch-Zeit kommt', 'feste Uhrzeit', false],
+            ['Hoch_Frueh', 'number', 'value', 'Grenze: nicht vor dieser Uhrzeit hochfahren (Minuten seit Mitternacht)', 390, false],
+            ['Hoch_Spaet', 'number', 'value', 'Grenze: nicht nach dieser Uhrzeit hochfahren (Minuten seit Mitternacht)', 480, false],
+            ['Hoch_Frueh_Text', 'string', 'text', 'Grenze nicht vor (HH:MM)', '06:30', false],
+            ['Hoch_Spaet_Text', 'string', 'text', 'Grenze nicht nach (HH:MM)', '08:00', false],
+            ['Hoch_Frueh_Schritt', 'number', 'value', 'Befehl: Grenze "nicht vor" um n Minuten aendern', 0, true],
+            ['Hoch_Spaet_Schritt', 'number', 'value', 'Befehl: Grenze "nicht nach" um n Minuten aendern', 0, true],
+            ['Runter_Sonne', 'boolean', 'indicator', 'Runterfahren bei Sonnenuntergang statt zur festen Uhrzeit', false, false],
+            ['Runter_Versatz', 'number', 'value', 'Versatz zum Sonnenuntergang in Minuten (negativ = vorher)', 0, false],
+            ['Runter_Quelle', 'string', 'text', 'Woher die Runter-Zeit kommt', 'feste Uhrzeit', false],
             ['Hoch_Schritt', 'number', 'value', 'Befehl: Hochfahrzeit um n Minuten aendern', 0, true],
             ['Runter_Schritt', 'number', 'value', 'Befehl: Runterfahrzeit um n Minuten aendern', 0, true],
             ['Letzte_Hoch', 'string', 'text', 'Datum des letzten Hochfahrens (Zeitplan)', '', false],
@@ -72,6 +99,8 @@ async function init() {
         await setStateAsync(P + r.id + '.Simuliert', simuliert(r), true);
         await setStateAsync(P + r.id + '.Hoch_Text', hhmm(Number(await get(P + r.id + '.Hoch_Min'))), true);
         await setStateAsync(P + r.id + '.Runter_Text', hhmm(Number(await get(P + r.id + '.Runter_Min'))), true);
+        await setStateAsync(P + r.id + '.Hoch_Frueh_Text', hhmm(Number(await get(P + r.id + '.Hoch_Frueh'))), true);
+        await setStateAsync(P + r.id + '.Hoch_Spaet_Text', hhmm(Number(await get(P + r.id + '.Hoch_Spaet'))), true);
     }
     for (const [id, type, def, name, wr] of [
         ['Allgemein.Alle_Befehl', 'string', '', 'Befehl an alle Rollladen: auf, zu, stopp', true],
@@ -130,6 +159,48 @@ async function aktorLesen(r) {
     return m ? Math.round(Number(m[1]) * 100) : null;
 }
 
+
+// ---------- Notlauf-Absicherung in der CCU (25.10.2026, Auftrag Besitzer: Variante C) ----------
+// Der Zeitplan laeuft weiterhin HIER. Faellt dieser Rechner oder der Tunnel aus, uebernimmt ein
+// Programm IN der CCU. Damit es weiss, ob hier noch jemand lebt und wann gefahren werden soll,
+// schreibt dieses Skript zwei Systemvariablen der CCU:
+//   Rollladen_Lebenszeichen  Minuten seit Mitternacht des letzten Lebenszeichens (alle 5 min)
+//   Rollladen_Plan           "<adresse:kanal>|<hoch_min>|<runter_min>;..." je Raum mit Automatik
+// Bleibt das Lebenszeichen laenger als NOTLAUF_VERZUG Minuten alt, faehrt die CCU selbst.
+const REGA = 'http://192.168.1.99:8181/tclrega.exe';
+const NOTLAUF_TAKT_MS = 300000;      // 5 Minuten
+let letzterPlan = null;
+
+function rega(skript) {
+    return new Promise((resolve, reject) => {
+        httpPost(REGA, skript, { timeout: 15000 }, (err, res) => {
+            if (err) return reject(new Error(String(err)));
+            resolve(String((res && res.data) || '').replace(/<xml>[\s\S]*/, ''));
+        });
+    });
+}
+
+async function notlaufPflegen() {
+    try {
+        const teile = [];
+        for (const r of ROOMS) {
+            if (!AKTOR[r.id]) continue;                       // Dummy-Raum: nichts zu fahren
+            if (!(await get(P + r.id + '.Auto'))) continue;    // Automatik aus: auch im Notlauf nicht
+            teile.push(AKTOR[r.id].adr + '|' + (await get(P + r.id + '.Hoch_Min')) + '|' + (await get(P + r.id + '.Runter_Min')));
+        }
+        const plan = teile.join(';');
+        if (plan !== letzterPlan) {
+            await rega('dom.GetObject(ID_SYSTEM_VARIABLES).Get("Rollladen_Plan").State("' + plan + '");');
+            letzterPlan = plan;
+            log('Rollladen: Notlauf-Plan an die CCU uebergeben (' + teile.length + ' Raeume)', 'info');
+        }
+        await rega('dom.GetObject(ID_SYSTEM_VARIABLES).Get("Rollladen_Lebenszeichen").State(' + nowMin() + ');');
+    } catch (e) {
+        // Tunnel oder CCU nicht erreichbar -- genau dann soll die CCU ohnehin selbst uebernehmen
+        log('Rollladen: Lebenszeichen an die CCU nicht moeglich (' + e.message + ')', 'warn');
+    }
+}
+
 // ---------- Fahren ----------
 async function setzeFahrt(r, f) {
     if ((await get(P + r.id + '.Fahrt')) !== f) { await setStateAsync(P + r.id + '.Fahrt', f, true); await setStateAsync(P + r.id + '.Status', f > 0 ? 'fährt auf' : f < 0 ? 'fährt zu' : 'steht', true); }
@@ -154,8 +225,97 @@ async function fahre(r, b, quelle) {
 const BEFEHLTEXT = { auf: 'hochgefahren', zu: 'runtergefahren', stopp: 'angehalten', z0: 'auf 0 % gefahren', z25: 'auf 25 % gefahren', z50: 'auf 50 % gefahren', z75: 'auf 75 % gefahren', z100: 'auf 100 % gefahren' };
 
 // ---------- Zeitplan ----------
+// ---------- Hoch- und Runterfahren nach der Sonne (08./09.11.2026, Auftrag Besitzer) ----------
+// Anlass: die feste Zeit 20:00 stammte aus dem Oktober. Am 08.11. ging die Sonne um 16:45 unter, die beiden
+// Dachfenster im 2. OG standen darum zwei Stunden unnoetig offen (die uebrigen Raeume werden von Hand bedient
+// und fielen nicht auf). Statt einer neuen festen Zeit, die im Juni wieder falsch waere, wird Runter_Min bei
+// Runter_Sonne = true taeglich neu berechnet. sonnenZeiten() laeuft beim Start und alle 5 Minuten, holt den
+// Mitternachtswechsel also selbst nach.
+// Am 09.11.2026 kam das Hochfahren dazu. Dort ist eine reine Sonnenzeit nicht brauchbar: Ende Juni waere
+// das 05:15, Ende Dezember 08:15. Darum begrenzen Hoch_Frueh / Hoch_Spaet das Ergebnis (voreingestellt
+// 06:30 bis 08:00). Wird gegrenzt, nennt Hoch_Quelle hinter einem Pfeil die tatsaechliche Zeit.
+async function sonnenMin(dp) {
+    let v = null;
+    try { const st = await getStateAsync(dp); v = st && st.val; } catch (e) { v = null; }
+    if (!v) return null;
+    const d = new Date(Number(v));
+    if (isNaN(d.getTime())) return null;
+    const t = new Date();                              // veralteten Wert nicht verwenden (Adapter steht): lieber die alte Zeit behalten
+    if (d.getFullYear() !== t.getFullYear() || d.getMonth() !== t.getMonth() || d.getDate() !== t.getDate()) return null;
+    return d.getHours() * 60 + d.getMinutes();
+}
+function versatzText(v) { return v === 0 ? '' : (v > 0 ? ' +' : ' \u2212') + Math.abs(v) + ' min'; }
+async function sonnenZeiten() {
+    const sa = await sonnenMin(SUNRISE_DP), su = await sonnenMin(SUNSET_DP);
+    for (const r of ROOMS) {
+        await sonnenZeitRaum(r, 'Hoch', sa, 'Sonnenaufgang');
+        await sonnenZeitRaum(r, 'Runter', su, 'Sonnenuntergang');
+    }
+}
+// Rechnet EINE Zeit (Hoch oder Runter) eines Raums aus der Sonnenzeit. Geschrieben wird nur <art>_Min --
+// Zeitplan, Anzeige und Notlauf-Plan der CCU lesen weiterhin ausschliesslich diesen Wert.
+async function sonnenZeitRaum(r, art, s, wort) {
+    const p = P + r.id + '.' + art;
+    if (!(await get(p + '_Sonne'))) { await setStateAsync(p + '_Quelle', 'feste Uhrzeit', true); return; }
+    if (s === null) { await setStateAsync(p + '_Quelle', wort + ' \u2013 Wert fehlt, letzte Zeit bleibt', true); return; }
+    const v = Math.round(Number(await get(p + '_Versatz')) || 0);
+    let neu = (((s + v) % 1440) + 1440) % 1440;
+    let gegrenzt = false;
+    if (art === 'Hoch') {                                  // Grenzen gibt es nur beim Hochfahren (Besitzer 09.11.2026)
+        const fr0 = Number(await get(p + '_Frueh')), sp0 = Number(await get(p + '_Spaet'));
+        const fr = isNaN(fr0) ? 0 : Math.round(fr0), sp = isNaN(sp0) ? 1439 : Math.round(sp0);
+        if (fr <= sp) {                                    // widerspruechliche Grenzen lieber uebergehen als falsch fahren
+            if (neu < fr) { neu = fr; gegrenzt = true; }
+            else if (neu > sp) { neu = sp; gegrenzt = true; }
+        }
+    }
+    if (Number(await get(p + '_Min')) !== neu) {
+        await setStateAsync(p + '_Min', neu, true);
+        await setStateAsync(p + '_Text', hhmm(neu), true);
+        await aktualisiereText(r);
+    }
+    await setStateAsync(p + '_Quelle', wort + ' ' + hhmm(s) + versatzText(v) + (gegrenzt ? ' \u2192 ' + hhmm(neu) : ''), true);
+}
+async function sonneUmschalten(r, art, an) {
+    const wort = art === 'Hoch' ? 'Sonnenaufgang' : 'Sonnenuntergang';
+    const was = art === 'Hoch' ? 'Hochfahren' : 'Runterfahren';
+    await setStateAsync(P + r.id + '.' + art + '_Sonne', an, true);
+    await sonnenZeiten();
+    const z = hhmm(Number(await get(P + r.id + '.' + art + '_Min')));
+    await meldung(r, an ? art + ' bei ' + wort + ' (heute ' + z + ')' : art + ' zur festen Uhrzeit ' + z);
+    await logge(r.name, an ? was + ' an den ' + wort + ' gekoppelt (heute ' + z + ')' : was + ' auf feste Uhrzeit ' + z, true);
+    await aktualisiereText(r);
+}
+// Grenzen des Hochfahrens verstellen. Eine Grenze darf die andere nicht ueberholen, sonst waere unklar,
+// welche gilt -- der Versuch wird abgelehnt und gemeldet statt stillschweigend verworfen.
+async function grenzeSchritt(r, welche, delta) {
+    if (await gesperrt()) { await meldung(r, 'Nicht ausgeführt: gesperrt \u2013 erst Entsperren'); await logge(r.name, 'Grenze ändern abgelehnt (gesperrt)', false); return; }
+    const id = P + r.id + '.Hoch_' + welche;
+    const neu = Math.max(0, Math.min(1439, Math.round(Number(await get(id))) + Math.round(Number(delta))));
+    const fr = welche === 'Frueh' ? neu : Math.round(Number(await get(P + r.id + '.Hoch_Frueh')));
+    const sp = welche === 'Spaet' ? neu : Math.round(Number(await get(P + r.id + '.Hoch_Spaet')));
+    if (fr > sp) { await meldung(r, 'Nicht ausgeführt: "nicht vor" darf nicht hinter "nicht nach" liegen'); return; }
+    await setStateAsync(id, neu, true);
+    await setStateAsync(id + '_Text', hhmm(neu), true);
+    await sonnenZeiten();
+    const z = hhmm(Number(await get(P + r.id + '.Hoch_Min')));
+    await meldung(r, (welche === 'Frueh' ? 'Hoch nicht vor ' : 'Hoch nicht nach ') + hhmm(neu) + ' \u2013 heute ' + z);
+    await logge(r.name, (welche === 'Frueh' ? 'Grenze nicht vor ' : 'Grenze nicht nach ') + hhmm(neu) + ' (heute hoch ' + z + ')', true);
+    await aktualisiereText(r);
+}
+
 async function zeitSchritt(r, art, delta) {
     if (await gesperrt()) { await meldung(r, 'Nicht ausgeführt: gesperrt – erst Entsperren'); await logge(r.name, art + '-Zeit ändern abgelehnt (gesperrt)', false); return; }
+    if (await get(P + r.id + '.' + art + '_Sonne')) {      // an die Sonne gekoppelt: die +/- Knoepfe verschieben den Versatz, nicht die Uhrzeit
+        const wort = art === 'Hoch' ? 'Sonnenaufgang' : 'Sonnenuntergang';
+        const v = Math.max(-180, Math.min(180, Math.round(Number(await get(P + r.id + '.' + art + '_Versatz')) || 0) + Math.round(Number(delta))));
+        await setStateAsync(P + r.id + '.' + art + '_Versatz', v, true);
+        await sonnenZeiten();
+        const z = hhmm(Number(await get(P + r.id + '.' + art + '_Min')));
+        await meldung(r, art + ' ' + (v === 0 ? 'genau zum ' + wort : Math.abs(v) + ' min ' + (v > 0 ? 'nach' : 'vor') + ' ' + wort) + ' = heute ' + z);
+        await aktualisiereText(r);
+        return;
+    }
     const id = P + r.id + '.' + art + '_Min';
     const neu = (((Number(await get(id)) + Math.round(Number(delta))) % 1440) + 1440) % 1440;
     await setStateAsync(id, neu, true);
@@ -218,6 +378,10 @@ async function befehl(r, b) {
     if (await gesperrt()) { await meldung(r, 'Nicht ausgeführt: gesperrt – erst Entsperren'); await logge(r.name, b + ' abgelehnt (gesperrt)', false); return; }
     if (b === 'auto_an') return autoUmschalten(r, true);
     if (b === 'auto_aus') return autoUmschalten(r, false);
+    if (b === 'sonne_an') return sonneUmschalten(r, 'Runter', true);
+    if (b === 'sonne_aus') return sonneUmschalten(r, 'Runter', false);
+    if (b === 'sonne_hoch_an') return sonneUmschalten(r, 'Hoch', true);
+    if (b === 'sonne_hoch_aus') return sonneUmschalten(r, 'Hoch', false);
     if (!BEFEHLTEXT[b]) { await meldung(r, 'Unbekannter Befehl'); return; }
     const ok = await fahre(r, b, 'Bedienung');
     if (ok) { await meldung(r, 'Gesendet ' + new Date().toLocaleTimeString('de-DE') + ': ' + BEFEHLTEXT[b]); await logge(r.name, BEFEHLTEXT[b], true); }
@@ -265,6 +429,8 @@ async function takt() {      // jede Sekunde
     for (const r of ROOMS) {
         on({ id: P + r.id + '.Befehl', ack: false, change: 'any' }, o => { befehl(r, o.state.val); });
         on({ id: P + r.id + '.Hoch_Schritt', ack: false, change: 'any' }, o => { zeitSchritt(r, 'Hoch', o.state.val); });
+        on({ id: P + r.id + '.Hoch_Frueh_Schritt', ack: false, change: 'any' }, o => { grenzeSchritt(r, 'Frueh', o.state.val); });
+        on({ id: P + r.id + '.Hoch_Spaet_Schritt', ack: false, change: 'any' }, o => { grenzeSchritt(r, 'Spaet', o.state.val); });
         on({ id: P + r.id + '.Runter_Schritt', ack: false, change: 'any' }, o => { zeitSchritt(r, 'Runter', o.state.val); });
     }
     on({ id: P + 'Allgemein.Alle_Befehl', ack: false, change: 'any' }, async o => {
@@ -280,8 +446,12 @@ async function takt() {      // jede Sekunde
         else await setStateAsync(P + 'Allgemein.Entsperrt', false, true);
     });
     if (!protokoll.length) await setStateAsync(P + 'Allgemein.Protokoll_HTML', '<div style="font-size:14px;color:#6d7780;">noch keine Aktion</div>', true);
+    await sonnenZeiten();                    // Hoch- und Runter-Zeiten der gekoppelten Raeume auf heute setzen, BEVOR der Zeitplan das erste Mal prueft
     await pruefeZeitplan();
+    setInterval(sonnenZeiten, 300000);       // alle 5 Minuten: holt den Mitternachtswechsel nach, auch wenn das Skript dabei stand
     setInterval(takt, 1000);
     setInterval(pruefeZeitplan, 20000);
+setInterval(notlaufPflegen, NOTLAUF_TAKT_MS);
+notlaufPflegen();
     log('Schwiegereltern_Rollladen gestartet (' + ROOMS.length + ' Rollladen, ' + ROOMS.filter(simuliert).length + ' simuliert, Zeitplan: einmal hoch, einmal runter)', 'info');
 })();

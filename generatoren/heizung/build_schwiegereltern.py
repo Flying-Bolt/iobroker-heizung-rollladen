@@ -31,11 +31,36 @@ ROOMS = [
     dict(id="Keller", name="Keller", accent="#b07be0", x=1070, devices=[
         dict(name="Thermostat Flur", typ="HmIP-eTRV-2", adr="00AB0000000012")],
         window=None, wlabel="Fenster", wkind="window", has_humidity=False),
+    dict(id="Kinderzimmer", name="Kinderzimmer", accent="#e8607a", x=30, devices=[
+        dict(name="Heizkörperthermostat", typ="HmIP-eTRV-2", adr="00AB0000000044"),
+        dict(name="Fensterkontakt", typ="HmIP-SWDO-A", adr="00AB0000000045")],
+        window="00AB0000000045", wlabel="Fenster", wkind="window", has_humidity=False),   # 17.10.2026, Gruppe INT0000003
+    dict(id="Buegelzimmer", name="Bügelzimmer", accent="#3fb8a6", x=550, devices=[
+        dict(name="Heizkörperthermostat", typ="HmIP-eTRV-2", adr="00AB0000000046"),
+        dict(name="Fensterkontakt", typ="HmIP-SWDO-A", adr="00AB0000000047"),
+        dict(name="Türkontakt", typ="HmIP-SWDO-A", adr="00AB0000000048")],
+        # 24.10.2026, Gruppe INT0000004: erster Raum mit ZWEI Kontakten -> Feld "windows" statt window/wlabel/wkind
+        windows=[dict(adr="00AB0000000047", label="Fenster", kind="window"),
+                 dict(adr="00AB0000000048", label="Tür", kind="door")],
+        window="00AB0000000047", wlabel="Fenster", wkind="window", has_humidity=False),
+    dict(id="Dachzimmer", name="Dachzimmer", accent="#5bc8e8", x=30, devices=[
+        dict(name="Heizkörperthermostat", typ="HmIP-eTRV-2", adr="00AB0000000049"),
+        dict(name="Fensterkontakt links", typ="HmIP-SWDO-A", adr="00AB0000000050"),
+        dict(name="Fensterkontakt rechts", typ="HmIP-SWDO-A", adr="00AB0000000051")],
+        # 07.11.2026, Gruppe INT0000005 "Dachzimmer" (2. OG, Besitzer: "Dach ist 2. OG"): zweiter Raum mit ZWEI Kontakten.
+        # Thermostat 00AB0000000049 heisst in der CCU "Buero" -- Zugehoerigkeit per Wertevergleich belegt
+        # (Gruppe und Thermostat meldeten beide Ist 22,3 / Soll 20,0 / Ventil 0, alle anderen wichen ab).
+        windows=[dict(adr="00AB0000000050", label="Dachfenster links", kind="window"),
+                 dict(adr="00AB0000000051", label="Dachfenster rechts", kind="window")],
+        window="00AB0000000050", wlabel="Dachfenster links", wkind="window", has_humidity=False),
 ]
+for _r in ROOMS: _r.setdefault("windows", None)   # Raeume mit genau einem Kontakt behalten window/wlabel/wkind
 ALL_DEVICES = [d["adr"] for r in ROOMS for d in r["devices"]]
 WINDOWS = [r["window"] for r in ROOMS]
 
-FLOORS = [   # Geschosse wie bei main#Raumklima (04.10.2026, von Besitzer bestaetigt: Wohnzimmer + Kueche im EG, Keller im UG)
+FLOORS = [   # Geschosse (07.11.2026: 2. Obergeschoss mit Dachzimmer oben ergaenzt; 17.10.2026: 1. Obergeschoss mit Kinderzimmer oben ergaenzt) wie bei main#Raumklima (04.10.2026, von Besitzer bestaetigt: Wohnzimmer + Kueche im EG, Keller im UG)
+    dict(name="2. Obergeschoss", accent="#5bc8e8", rooms=["Dachzimmer"]),   # Dachzimmer 07.11.2026 (Besitzer: "Dach ist 2. OG")
+    dict(name="1. Obergeschoss", accent="#e8607a", rooms=["Kinderzimmer", "Buegelzimmer"]),   # Buegelzimmer 24.10.2026 (Besitzer: "im 1 Stock")
     dict(name="Erdgeschoss", accent="#f2a93b", rooms=["Wohnzimmer", "Kueche"]),
     dict(name="Untergeschoss", accent="#3ddc84", rooms=["Keller"]),
 ]
@@ -112,7 +137,50 @@ def card(r):
              '<div style="width:%s%%;height:10px;border-radius:5px;background:orangered;"></div></div>' % ventw)
     o.append('<div style="position:absolute;left:276px;top:296px;font-size:14px;color:#cfd6dc;">%s</div>' % venttxt)
     # Fenster
-    if r["window"] is None:
+    if r["windows"]:
+        # Raum mit ZWEI Kontakten (24.10.2026, Buegelzimmer): zwei Spalten im selben Block.
+        # Symbole kleiner (44x42 statt 86x84), Zustand unter dem Namen, darunter eine gemeinsame Zeile fuer die Gruppe.
+        o.append('<div style="position:absolute;left:20px;top:340px;width:460px;height:104px;border-radius:14px;background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.07);"></div>')
+        offen_vars, offen_namen = [], []
+        for i, wdef in enumerate(r["windows"]):
+            wid_i = P + "Geraete." + wdef["adr"] + ".STATE"
+            nm = chr(97 + i)
+            offen_vars.append(V(nm, wid_i)); offen_namen.append(nm)
+            op_open = B(V("w", wid_i), "w==1&&1||0")
+            op_closed = B(V("w", wid_i), "w==1&&0||1")
+            col = B(V("w", wid_i), "w==1&&'tomato'||'mediumseagreen'")
+            txt = B(V("w", wid_i), "w==1&&'OFFEN'||'geschlossen'")
+            sx, tx = (34, 84) if i == 0 else (254, 304)
+            if wdef["kind"] == "door":
+                o.append('<svg style="position:absolute;left:%dpx;top:348px;" width="44" height="44" viewBox="0 0 44 44">'
+                         '<g opacity="%s"><rect x="7" y="2" width="30" height="40" rx="3" fill="#1f262c" stroke="#3ddc84" stroke-width="3"/>'
+                         '<rect x="11" y="6" width="22" height="22" fill="#2a4f3b"/><rect x="11" y="32" width="22" height="6" fill="#2a4f3b"/>'
+                         '<circle cx="31" cy="30" r="2" fill="#3ddc84"/></g>'
+                         '<g opacity="%s"><rect x="7" y="2" width="30" height="40" rx="3" fill="#1f262c" stroke="#ff5a4d" stroke-width="3"/>'
+                         '<polygon points="10,5 23,1 23,43 10,39" fill="#ff8a80" opacity="0.9"/><circle cx="21" cy="25" r="1.8" fill="#5a2a27"/>'
+                         '<line x1="7" y1="22" x2="1" y2="22" stroke="#ff5a4d" stroke-width="2.5" stroke-linecap="round"/></g></svg>'
+                         % (sx, op_closed, op_open))
+            else:
+                o.append('<svg style="position:absolute;left:%dpx;top:348px;" width="44" height="44" viewBox="0 0 44 44">'
+                         '<g opacity="%s"><rect x="3" y="3" width="38" height="38" rx="3" fill="#1f262c" stroke="#3ddc84" stroke-width="3"/>'
+                         '<rect x="7" y="7" width="13" height="30" fill="#2a4f3b"/><rect x="24" y="7" width="13" height="30" fill="#2a4f3b"/>'
+                         '<line x1="22" y1="7" x2="22" y2="37" stroke="#3ddc84" stroke-width="2"/></g>'
+                         '<g opacity="%s"><rect x="3" y="3" width="38" height="38" rx="3" fill="#1f262c" stroke="#ff5a4d" stroke-width="3"/>'
+                         '<rect x="24" y="7" width="13" height="30" fill="#5a2a27"/>'
+                         '<polygon points="7,7 19,2 19,38 7,35" fill="#ff8a80" opacity="0.9"/>'
+                         '<line x1="5" y1="22" x2="1" y2="22" stroke="#ff5a4d" stroke-width="2.5" stroke-linecap="round"/></g></svg>'
+                         % (sx, op_closed, op_open))
+            o.append('<div style="position:absolute;left:%dpx;top:350px;%s">%s</div>' % (tx, LABEL, wdef["label"].upper()))
+            o.append('<div style="position:absolute;left:%dpx;top:368px;font-size:19px;white-space:nowrap;font-weight:700;color:%s;">%s</div>' % (tx, col, txt))
+        # gemeinsame Fusszeile: was die Heizungsgruppe sieht, und eine Warnung, wenn sie einen offenen Kontakt nicht kennt
+        gw = B(V("g", pid + "Fenster_Gruppe"), "g==1&&'offen'||'zu'")
+        o.append('<div style="position:absolute;left:34px;top:400px;font-size:13px;color:#9aa5ad;">Heizungsgruppe meldet: <b style="color:#cfd6dc;">%s</b></div>' % gw)
+        summe = "+".join("(%s==1?1:0)" % n for n in offen_namen)
+        hint = B(*(offen_vars + [V("g", pid + "Fenster_Gruppe"),
+                   "(%s)>0&&g==0&&'Hinweis: Heizung wei\u00df nichts von der \u00f6ffnung'||''" % summe]))
+        o.append('<div style="position:absolute;left:34px;top:419px;font-size:13px;font-weight:700;color:orange;">%s</div>' % hint)
+        wst = None
+    elif r["window"] is None:
         gw0 = B(V("g", pid + "Fenster_Gruppe"), "g==1&&'offen'||'zu'")
         o.append('<div style="position:absolute;left:20px;top:340px;width:460px;height:104px;border-radius:14px;background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.07);"></div>')
         o.append('<svg style="position:absolute;left:34px;top:350px;" width="86" height="84" viewBox="0 0 86 84">'
@@ -260,7 +328,7 @@ def header():
             '<div style="position:absolute;left:2px;top:62px;font-size:17px;color:#8a96a0;letter-spacing:0.5px;">Haus der Schwiegereltern · Heizung, Temperatur und Fenster aller Räume</div>'
             '<div style="position:absolute;right:0;top:18px;font-size:19px;font-weight:700;color:%s;">%s</div>'
             '<div style="position:absolute;right:0;top:50px;font-size:14px;color:#8a96a0;">Stand %s · HomeMatic IP über WireGuard</div>'
-            '<a href="/vis-2/index.html?main#Dashboard" style="position:absolute;right:0;top:70px;font-size:13px;color:#4c9be8;text-decoration:none;">‹ zur Haupt-Visualisierung</a>'
+            '<a href="/vis-2/index.html?main#Uebersicht" style="position:absolute;right:0;top:70px;font-size:13px;color:#4c9be8;text-decoration:none;">‹ zur Haupt-Visualisierung</a>'
             '<a href="/vis-2/index.html?main#Batterie" style="position:absolute;right:190px;top:70px;font-size:13px;color:#4c9be8;text-decoration:none;">Batterien ›</a>'
             '<a href="/vis-2/index.html?Schwiegereltern#Rollladen" style="position:absolute;right:274px;top:70px;font-size:13px;color:#4c9be8;text-decoration:none;">Rollladen ›</a>'
             '<div style="position:absolute;left:0;top:90px;width:1540px;height:2px;background:linear-gradient(90deg,#f2a93b,#4c9be8,rgba(76,155,232,0));"></div>'
@@ -270,22 +338,32 @@ def tile(label, value, caption, valcol="#ffffff", capcol="#8a96a0"):
     return ('<div style="position:relative;width:370px;height:108px;font-family:%s;color:#e9eef2;'
             'background:linear-gradient(160deg,#1b2127,#12161a);border:1px solid #2b333b;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,0.4);">'
             '<div style="position:absolute;left:20px;top:14px;%s">%s</div>'
-            '<div style="position:absolute;left:20px;top:30px;font-size:46px;font-weight:700;line-height:54px;color:%s;">%s</div>'
-            '<div style="position:absolute;left:20px;top:84px;font-size:13px;font-weight:700;color:%s;">%s</div></div>'
+            '<div style="position:absolute;left:20px;top:30px;font-size:46px;font-weight:700;line-height:50px;color:%s;">%s</div>'
+            # 07.11.2026: seit dem Dachzimmer braucht die Kontaktliste ZWEI Zeilen -- Beschriftung hoeher,
+            # kleiner und auf Kachelbreite begrenzt, sonst schneidet die Kachel (108 px) die zweite Zeile ab.
+            '<div style="position:absolute;left:20px;top:80px;width:332px;font-size:12px;line-height:13.5px;font-weight:700;color:%s;">%s</div></div>'
             % (FONT, LABEL, label, valcol, value, capcol, caption))
 
 def tiles():
     out = []
     n = B(V("n", P + "Allgemein.Fenster_offen"), "n")
     ncol = B(V("n", P + "Allgemein.Fenster_offen"), "n>0&&'tomato'||'mediumseagreen'")
-    out.append(tile("FENSTER / TÜREN OFFEN", n, "Terrassentür (Wohnzimmer) und Küchenfenster", ncol))
-    a = V("a", P + "Wohnzimmer.Ist"); b = V("b", P + "Kueche.Ist"); c = V("c", P + "Keller.Ist")
-    mean = B(a, b, c, "((a+b+c)/3).toFixed(1).replace('.',',')")
-    out.append(tile("Ø RAUMTEMPERATUR", mean + '<span style="font-size:24px;color:#9aa5ad;"> °C</span>', "Mittel aus Wohnzimmer, Küche und Keller", "#ffffff"))
-    va = V("a", P + "Wohnzimmer.Ventil"); vb = V("b", P + "Kueche.Ventil"); vc = V("c", P + "Keller.Ventil")
-    heiz = B(va, vb, vc, "(a>0)+(b>0)+(c>0)")
-    heizcol = B(va, vb, vc, "(a>0)+(b>0)+(c>0)>0&&'orangered'||'lightgray'")
-    out.append(tile("HEIZUNG AKTIV", heiz + '<span style="font-size:24px;color:#9aa5ad;"> von 3 Räumen</span>', "Ventil in mindestens einem Heizkörper offen", heizcol))
+    kontakte = []
+    for r in ROOMS:
+        if r["windows"]:
+            kontakte.append("%s (%d)" % (r["name"], len(r["windows"])))
+        elif r["window"]:
+            kontakte.append(r["wlabel"] if r["id"] == "Wohnzimmer" else r["name"])
+    out.append(tile("FENSTER / TÜREN OFFEN", n, ", ".join(kontakte), ncol))
+    nm = [chr(97 + i) for i in range(len(ROOMS))]
+    ist = [V(nm[i], P + r["id"] + ".Ist") for i, r in enumerate(ROOMS)]
+    mean = B(*(ist + ["((%s)/%d).toFixed(1).replace('.',',')" % ("+".join(nm), len(ROOMS))]))
+    out.append(tile("Ø RAUMTEMPERATUR", mean + '<span style="font-size:24px;color:#9aa5ad;"> °C</span>', "Mittel aus allen %d Räumen" % len(ROOMS), "#ffffff"))
+    vent = [V(nm[i], P + r["id"] + ".Ventil") for i, r in enumerate(ROOMS)]
+    zahl = "+".join("(%s>0)" % x for x in nm)
+    heiz = B(*(vent + [zahl]))
+    heizcol = B(*(vent + ["%s>0&&'orangered'||'lightgray'" % zahl]))
+    out.append(tile("HEIZUNG AKTIV", heiz + '<span style="font-size:24px;color:#9aa5ad;"> von %d Räumen</span>' % len(ROOMS), "Ventil in mindestens einem Heizkörper offen", heizcol))
     un = [V(chr(97 + i), P + "Geraete." + adr + ".UNREACH") for i, adr in enumerate(ALL_DEVICES)]
     names_un = [chr(97 + i) for i in range(len(ALL_DEVICES))]
     ok = B(*(un + ["%d-%s" % (len(ALL_DEVICES), "-".join(names_un))]))
