@@ -178,16 +178,34 @@ Pro Rollladen mit `Auto = true` und für `Hoch` (Befehl `auf`, Marker `Letzte_Ho
 
 ```
 t = <Art>_Min
-wenn  Marker beginnt NICHT mit heutigem Datum
+Marker-Formen:  <Datum>              gefahren
+                <Datum>*             uebersprungen (siehe unten)
+                <Datum>!<Minute>/<n> Versuch um <Minute> fehlgeschlagen, es war der n-te
+
+wenn  Marker ist nicht "heute gefahren/uebersprungen"
 und   jetzt >= t  und  jetzt <= t + NACHHOL_MIN (60)
-dann: Marker = heutiges Datum            # ZUERST markieren: höchstens einmal je Tag
-      fahre(raum, befehl, 'Zeitplan')
-      protokollieren ("nachgeholt, geplant HH:MM" wenn mehr als 2 min zu spät)
+und   (kein Fehlversuch heute  oder  letzter Versuch >= WIEDERHOL_MIN (5) Minuten her)
+dann: Marker = heutiges Datum            # Laufsperre: keine zweite Fahrt im naechsten 20-s-Takt
+      ok = fahre(raum, befehl, 'Zeitplan', still = (n > 1))
+      wenn ok:    protokollieren ("nachgeholt, geplant HH:MM" wenn mehr als 2 min zu spaet,
+                                  "(n. Versuch)" ab dem zweiten)
+      sonst:      Marker = <Datum>!<jetzt>/<n>      # Laufsperre zuruecknehmen
 ```
 * **Nachholen:** War ioBroker zur Schaltzeit aus (Neustart, Ausfall), wird innerhalb von 60 Minuten nachgeholt, danach nicht mehr.
+* **Nachholen auch bei Funkfehlern (16.11.2026):** Lehnt die CCU den Befehl ab (`faultCode -1 … (UNREACH)`, bei
+  schwachem Funk), gilt die Fahrt **nicht** als erledigt. Sie wird im selben 60-Minuten-Fenster wiederholt,
+  gedrosselt auf `WIEDERHOL_MIN = 5` Minuten, also höchstens zwölf Versuche. **Ab dem zweiten Versuch
+  protokolliert der Fehler nicht mehr** (Parameter `still` in `fahre`/`setzeZiel`), sonst füllt ein
+  dauerhaft unerreichbarer Aktor Protokoll (40 Plätze) und Logdatei.
+
+  > **Warum das nötig war:** Die Laufsperre wird **vor** der Fahrt gesetzt, damit der 20-Sekunden-Takt nicht
+  > zweimal fährt. Wurde sie nach einem Fehlschlag nicht zurückgenommen, fiel die Fahrt für den **ganzen Tag**
+  > aus, und die Anzeige zeigte trotzdem einen Haken. Eine Laufsperre, die vor der Arbeit gesetzt wird, muss
+  > nach einem Fehlschlag zurückgenommen werden — sonst schützt sie nicht gegen Doppelausführung, sondern
+  > gegen Ausführung.
 * **Beim Einschalten (`autoUmschalten(an)`)** werden heute schon vergangene Zeiten **nicht** nachgeholt: der Marker wird `<Datum>*` ("übersprungen") gesetzt.
 * **Zeit ändern (`zeitSchritt`):** `±n` Minuten, Ergebnis modulo 1440 (`((x % 1440) + 1440) % 1440`), also mit Überlauf über Mitternacht. Nur im entsperrten Zustand.
-* **Anzeigetexte (`aktualisiereText`):** `Heute` zeigt je Art `✓ HH:MM` (erledigt), `übersprungen (… schon vorbei)`, `ausstehend HH:MM` oder `nicht ausgeführt`.
+* **Anzeigetexte (`aktualisiereText`):** `Heute` zeigt je Art `✓ HH:MM` (erledigt), `übersprungen (… schon vorbei)`, `ausstehend HH:MM`, `nicht ausgeführt` oder — nach einem Funkfehler — `Funkfehler HH:MM, Wiederholung läuft` bzw. nach Fensterschluss `nicht ausgeführt (Funkfehler HH:MM)`. **Ein Haken erscheint nur, wenn wirklich gefahren wurde.**
   `Naechste` berechnet für Hoch und Runter die Minuten bis zum nächsten Auftreten (heute, wenn noch offen und nicht vorbei, sonst morgen = +1440) und nimmt das Kleinere.
 * Es gibt **bewusst nur eine Hoch- und eine Runterzeit je Tag** (kein Wochenprogramm). Die Zeit selbst kann fest sein
   oder täglich aus dem Sonnenstand berechnet werden — siehe 4.6.

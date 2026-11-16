@@ -46,7 +46,8 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
 * **Bedienung abgesichert:** Die View hat keine Anmeldung. Deshalb gibt es ein **Schloss** (10 s Entsperrung), Grenzen **8–26 °C**,
   höchstens **20 Befehle in 10 Minuten je Raum** und einen Gesamtschalter `Bedienung_erlaubt`. Nach jedem Skriptstart ist alles gesperrt.
 * **Rollladen:** Der Zeitplan läuft **in ioBroker**, nicht in der CCU. Fällt ioBroker zur Schaltzeit nur kurz aus, wird innerhalb
-  von 60 Minuten nachgeholt. Fällt er **länger** aus — oder reißt die Netzverbindung zur CCU ab — übernimmt der
+  von 60 Minuten nachgeholt — ebenso, wenn die CCU einen Fahrbefehl wegen schwachem Funk ablehnt (`UNREACH`): dann wird
+  im selben Fenster alle 5 Minuten erneut versucht, statt die Fahrt für den Tag abzuhaken. Fällt er **länger** aus — oder reißt die Netzverbindung zur CCU ab — übernimmt der
   **[Notlauf in der CCU](notlauf/)**: Bleibt das Lebenszeichen über 30 Minuten aus, fährt die Zentrale selbst, geprüft alle
   15 Minuten, Fahrten bis 90 Minuten nach der Sollzeit. Er ist **zustandslos** — er sieht die Position des Aktors an, statt
   sich zu merken, ob heute schon gefahren wurde.

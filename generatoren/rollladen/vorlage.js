@@ -39,6 +39,7 @@ const AKTOR = {
     'Dachfenster_links': { adr: '00AB0000000054:4' },      // HmIP-BROLL-2, Dachfenster links 2. OG (angelernt 01.11.2026; Funk schwach -90 dBm; Laufzeit 90/90 Werk, nicht eingemessen)
 };
 const FAHRZEIT_S = 30, SCHRITT = 100 / FAHRZEIT_S, NACHHOL_MIN = 60, ENTSPERR_MS = 60000, MAXPROT = 40;
+const WIEDERHOL_MIN = 5;     // 16.11.2026: Minuten zwischen zwei Versuchen, wenn die CCU den Befehl ablehnt (UNREACH)
 const letzteAenderung = {}, letzteAbfrage = {};
 let entsperrTimer = null, protokoll = [];
 const simuliert = r => !AKTOR[r.id];
@@ -193,16 +194,16 @@ async function notlaufPflegen() {
 async function setzeFahrt(r, f) {
     if ((await get(P + r.id + '.Fahrt')) !== f) { await setStateAsync(P + r.id + '.Fahrt', f, true); await setStateAsync(P + r.id + '.Status', f > 0 ? 'fährt auf' : f < 0 ? 'fährt zu' : 'steht', true); }
 }
-async function setzeZiel(r, wert, quelle) {
+async function setzeZiel(r, wert, quelle, still) {
     const z = Math.max(0, Math.min((AKTOR[r.id] && AKTOR[r.id].max) || 100, Math.round(Number(wert))));      // max = Obergrenze je Rollladen (derzeit keine gesetzt; Schlafzimmer-Grenze 75 % am 24.10.2026 auf des Besitzers Wunsch aufgehoben)
     await setStateAsync(P + r.id + '.Ziel', z, true);
-    if (!simuliert(r)) { try { await aktorLevel(r, z); letzteAenderung[r.id] = Date.now(); } catch (e) { await meldung(r, 'Fehler: ' + e.message); await logge(r.name, quelle + ': ' + e.message, false); return false; } }
+    if (!simuliert(r)) { try { await aktorLevel(r, z); letzteAenderung[r.id] = Date.now(); } catch (e) { await meldung(r, 'Fehler: ' + e.message); if (!still) await logge(r.name, quelle + ': ' + e.message, false); return false; } }   // still = Wiederholversuch, nicht erneut protokollieren
     return true;
 }
-async function fahre(r, b, quelle) {
-    if (b === 'auf') return setzeZiel(r, 100, quelle);
-    if (b === 'zu') return setzeZiel(r, 0, quelle);
-    if (/^z(0|25|50|75|100)$/.test(b)) return setzeZiel(r, Number(b.slice(1)), quelle);
+async function fahre(r, b, quelle, still) {
+    if (b === 'auf') return setzeZiel(r, 100, quelle, still);
+    if (b === 'zu') return setzeZiel(r, 0, quelle, still);
+    if (/^z(0|25|50|75|100)$/.test(b)) return setzeZiel(r, Number(b.slice(1)), quelle, still);
     if (b === 'stopp') {
         await setStateAsync(P + r.id + '.Ziel', Math.round(Number(await get(P + r.id + '.Position'))), true);
         if (!simuliert(r)) { try { await aktorStop(r); } catch (e) { await meldung(r, 'Fehler: ' + e.message); return false; } }
@@ -327,8 +328,10 @@ async function aktualisiereText(r) {
     const auto = !!(await get(P + r.id + '.Auto')), h = heuteStr(), n = nowMin();
     const hm = Number(await get(P + r.id + '.Hoch_Min')), rm = Number(await get(P + r.id + '.Runter_Min'));
     const lh = await get(P + r.id + '.Letzte_Hoch'), lr = await get(P + r.id + '.Letzte_Runter');
-    const erledigt = d => String(d).startsWith(h);
-    const stat = (done, t) => done === h ? '✓ ' + hhmm(t) : done === h + '*' ? 'übersprungen (' + hhmm(t) + ' schon vorbei)' : n < t ? 'ausstehend ' + hhmm(t) : 'nicht ausgeführt';
+    const erledigt = d => String(d).startsWith(h) && String(d).indexOf('!') < 0;     // '!' = Versuch fehlgeschlagen, also NICHT erledigt
+    const stat = (done, t) => String(done).startsWith(h + '!')
+        ? (n <= t + NACHHOL_MIN ? 'Funkfehler ' + hhmm(t) + ', Wiederholung läuft' : 'nicht ausgeführt (Funkfehler ' + hhmm(t) + ')')
+        : done === h ? '✓ ' + hhmm(t) : done === h + '*' ? 'übersprungen (' + hhmm(t) + ' schon vorbei)' : n < t ? 'ausstehend ' + hhmm(t) : 'nicht ausgeführt';
     await setStateAsync(P + r.id + '.Heute', auto ? '▲ ' + stat(lh, hm) + '  ·  ▼ ' + stat(lr, rm) : 'Zeitplan aus', true);
     if (!auto) { await setStateAsync(P + r.id + '.Naechste', 'Zeitplan ist aus', true); return; }
     const kand = [];
@@ -346,12 +349,27 @@ async function pruefeZeitplan() {
         if (await get(P + r.id + '.Auto')) {
             for (const [art, bef, key] of [['Hoch', 'auf', 'Letzte_Hoch'], ['Runter', 'zu', 'Letzte_Runter']]) {
                 const t = Number(await get(P + r.id + '.' + art + '_Min'));
-                if (!String(await get(P + r.id + '.' + key)).startsWith(h) && n >= t && n <= t + NACHHOL_MIN) {
-                    await setStateAsync(P + r.id + '.' + key, h, true);       // vorher markieren: nur einmal je Tag
-                    const ok = await fahre(r, bef, 'Zeitplan');
+                // Markierung: '<datum>' = gefahren, '<datum>*' = uebersprungen, '<datum>!<minute>/<versuch>' = Versuch
+                // fehlgeschlagen (16.11.2026). Beim Fehlschlag wird NICHT auf erledigt gesetzt, sonst faellt die
+                // Fahrt fuer den ganzen Tag aus -- genau das passierte am 16.11.2026 um 07:30 (Funk, UNREACH).
+                const letzte = String(await get(P + r.id + '.' + key));
+                const fehl = letzte.startsWith(h + '!');
+                if ((letzte.startsWith(h) && !fehl) || n < t || n > t + NACHHOL_MIN) continue;
+                let versuch = 1;
+                if (fehl) {
+                    const teile = (letzte.split('!')[1] || '0/0').split('/');
+                    if (n - Number(teile[0]) < WIEDERHOL_MIN) continue;       // noch zu frueh fuer den naechsten Versuch
+                    versuch = Number(teile[1]) + 1;
+                }
+                await setStateAsync(P + r.id + '.' + key, h, true);           // Laufsperre: keine zweite Fahrt im naechsten Takt
+                const ok = await fahre(r, bef, 'Zeitplan', versuch > 1);      // ab dem 2. Versuch still, sonst laeuft das Protokoll voll
+                if (ok) {
                     const verspaetet = n - t > 2 ? ' (nachgeholt, geplant ' + hhmm(t) + ')' : '';
-                    await meldung(r, ok ? 'Zeitplan: ' + BEFEHLTEXT[bef] + ' ' + hhmm(n) : 'Zeitplan: Fehler');
-                    if (ok) await logge(r.name, 'Zeitplan: ' + BEFEHLTEXT[bef] + verspaetet, true);
+                    await meldung(r, 'Zeitplan: ' + BEFEHLTEXT[bef] + ' ' + hhmm(n));
+                    await logge(r.name, 'Zeitplan: ' + BEFEHLTEXT[bef] + verspaetet + (versuch > 1 ? ' (' + versuch + '. Versuch)' : ''), true);
+                } else {
+                    await setStateAsync(P + r.id + '.' + key, h + '!' + n + '/' + versuch, true);
+                    await meldung(r, 'Zeitplan: Fehler (' + versuch + '. Versuch) \u2013 Wiederholung in ' + WIEDERHOL_MIN + ' min');
                 }
             }
         }
