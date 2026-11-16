@@ -119,6 +119,22 @@ Die Pfade in den Generatoren sind Beispiele und müssen angepasst werden.
 `generatoren/rollladen/build_view.py` erzeugt die Rollladen-View, `build_script.py` das Zeitplan-Skript aus `vorlage.js`
 und `raeume.json`.
 
+## Prüfstand
+
+```
+node tests/test_nachholen.js skripte/rollladen_zeitplan.js
+```
+
+[`tests/test_nachholen.js`](tests/test_nachholen.js) schneidet die Zeitplanfunktion `pruefeZeitplan` aus dem
+Quelltext und lässt sie mit Attrappen laufen — ohne ioBroker, ohne CCU und ohne einen Rollladen zu bewegen.
+Geprüft wird gerade das, was man nicht auf Zuruf erzeugen kann: ein Fahrbefehl, den die Zentrale wegen
+schwachem Funk ablehnt (`UNREACH`). Durchgespielt werden Erfolg beim ersten Versuch, Fehlschlag, Drosselung,
+zweiter Versuch (still), Erfolg beim dritten, geschlossenes Nachholfenster, „schon erledigt" und
+„übersprungen" — **18 Prüfungen**, Rückgabewert 0, wenn alle bestehen. Ein ganzer Tag läuft dabei in
+Millisekunden ab, weil `heuteStr`/`nowMin` Attrappen sind.
+
+Wer das Skript ändert, sollte vorher `node --check` und danach diesen Prüfstand laufen lassen.
+
 ## Notlauf in der CCU
 
 `notlauf/` enthält die Absicherung für den Fall, dass ioBroker oder die Netzverbindung ausfällt:
