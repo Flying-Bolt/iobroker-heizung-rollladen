@@ -40,6 +40,12 @@ const AKTOR = {
 };
 const FAHRZEIT_S = 30, SCHRITT = 100 / FAHRZEIT_S, NACHHOL_MIN = 60, ENTSPERR_MS = 60000, MAXPROT = 40;
 const WIEDERHOL_MIN = 5;     // 16.11.2026: Minuten zwischen zwei Versuchen, wenn die CCU den Befehl ablehnt (UNREACH)
+// 16.11.2026: Funkguete je Aktor. RSSI steht im WARTUNGSkanal (:0), nicht im Fahrkanal (:4), darum eine eigene
+// Abfrage. Zwei Richtungen: RSSI_DEVICE = wie gut das Geraet die Zentrale hoert, RSSI_PEER = umgekehrt.
+// Angezeigt wird der SCHLECHTERE der beiden -- eine Funkstrecke ist nur so gut wie ihre schwaechere Richtung.
+const FUNK_TAKT_MS = 900000, FUNK_START_MS = 30000;     // alle 15 Minuten, erstmals 30 s nach dem Start
+const FUNK_GUT = -80, FUNK_MITTEL = -90;                // >= -80 gruen, -80 bis -90 gelb, darunter rot
+const FUNK_MIN = -120, FUNK_MAX = -20;                  // alles ausserhalb ist keine Messung (HmIP liefert dann 0)
 const letzteAenderung = {}, letzteAbfrage = {};
 let entsperrTimer = null, protokoll = [];
 const simuliert = r => !AKTOR[r.id];
@@ -80,7 +86,11 @@ async function init() {
             ['Letzte_Runter', 'string', 'text', 'Datum des letzten Runterfahrens (Zeitplan)', '', false],
             ['Naechste', 'string', 'text', 'Naechste geplante Aktion', 'Automatik aus', false],
             ['Heute', 'string', 'text', 'Was heute vom Zeitplan erledigt ist', '', false],
-            ['Meldung', 'string', 'text', 'Ergebnis des letzten Befehls', 'Bereit', false]
+            ['Meldung', 'string', 'text', 'Ergebnis des letzten Befehls', 'Bereit', false],
+            ['Funk_dBm', 'number', 'value', 'Funkguete: der schlechtere der beiden Werte in dBm (0 = keine Messung)', 0, false],
+            ['Funk_Geraet', 'number', 'value', 'Funk: wie gut das Geraet die Zentrale hoert (RSSI_DEVICE, dBm)', 0, false],
+            ['Funk_Zentrale', 'number', 'value', 'Funk: wie gut die Zentrale das Geraet hoert (RSSI_PEER, dBm)', 0, false],
+            ['Funk_Stand', 'string', 'text', 'Funk: Uhrzeit der letzten gelungenen Messung', '', false]
         ]) {
             const full = P + r.id + '.' + id;
             if (!existsState(full)) await createStateAsync(full, def, { name: r.name + ': ' + name, type, role, read: true, write: wr });
@@ -146,6 +156,36 @@ async function aktorLesen(r) {
     const txt = await rpc('getParamset', [S(AKTOR[r.id].adr), S('VALUES')]);
     const m = /<name>LEVEL<\/name>\s*<value>\s*<double>([^<]+)<\/double>/.exec(txt);
     return m ? Math.round(Number(m[1]) * 100) : null;
+}
+
+// ---------- Funkguete (16.11.2026) ----------
+function rssiWert(txt, name) {
+    const m = new RegExp('<name>' + name + '<\\/name>\\s*<value>\\s*<i4>(-?\\d+)<\\/i4>').exec(txt);
+    if (!m) return null;
+    const v = Number(m[1]);
+    return (v >= FUNK_MIN && v <= FUNK_MAX) ? v : null;      // 0 oder 128 heisst "unbekannt", nicht "sehr gut"
+}
+async function funkLesen() {
+    let gelesen = 0, stumm = 0;
+    for (const r of ROOMS) {
+        if (!AKTOR[r.id]) continue;                           // Dummy-Raum: kein Geraet, keine Funkguete
+        try {
+            const adr0 = AKTOR[r.id].adr.split(':')[0] + ':0';    // Wartungskanal
+            const txt = await rpc('getParamset', [S(adr0), S('VALUES')]);
+            const dev = rssiWert(txt, 'RSSI_DEVICE'), peer = rssiWert(txt, 'RSSI_PEER');
+            const beide = [dev, peer].filter(v => v !== null);
+            if (!beide.length) { stumm++; continue; }             // antwortet, meldet aber keinen Pegel
+            await setStateAsync(P + r.id + '.Funk_Geraet', dev === null ? 0 : dev, true);
+            await setStateAsync(P + r.id + '.Funk_Zentrale', peer === null ? 0 : peer, true);
+            await setStateAsync(P + r.id + '.Funk_dBm', Math.min(...beide), true);
+            await setStateAsync(P + r.id + '.Funk_Stand', new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }), true);
+            gelesen++;
+        } catch (e) {
+            stumm++;                                          // nicht erreichbar: alten Wert stehen lassen, Stand verraet das Alter
+        }
+        await new Promise(res => setTimeout(res, 150));        // die CCU nicht fluten
+    }
+    if (!gelesen) log('Rollladen: Funkguete nicht lesbar (' + stumm + ' Geraete stumm)', 'warn');
 }
 
 
@@ -458,6 +498,8 @@ async function takt() {      // jede Sekunde
     setInterval(takt, 1000);
     setInterval(pruefeZeitplan, 20000);
 setInterval(notlaufPflegen, NOTLAUF_TAKT_MS);
+setTimeout(funkLesen, FUNK_START_MS);
+setInterval(funkLesen, FUNK_TAKT_MS);
 notlaufPflegen();
     log('Schwiegereltern_Rollladen gestartet (' + ROOMS.length + ' Rollladen, ' + ROOMS.filter(simuliert).length + ' simuliert, Zeitplan: einmal hoch, einmal runter)', 'info');
 })();

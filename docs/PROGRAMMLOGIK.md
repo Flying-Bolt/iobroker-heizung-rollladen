@@ -259,6 +259,33 @@ Laien: [`notlauf/NOTFALL-VERBINDUNG.md`](../notlauf/NOTFALL-VERBINDUNG.md).
 
 ---
 
+### 4.8 Funkgüte je Aktor (`funkLesen`, alle 15 Minuten)
+
+Jede Rollladenkarte zeigt unten links, wie gut der Aktor funkt. Der Wert entsteht in `funkLesen()`:
+
+| Was | Wert |
+|---|---|
+| Takt | alle **15 Minuten** (`FUNK_TAKT_MS`), erstmals 30 s nach dem Start (`FUNK_START_MS`) |
+| Quelle | `getParamset(<Adresse>:0, VALUES)` — die Felder `RSSI_DEVICE` und `RSSI_PEER` |
+| Pause | 150 ms zwischen zwei Geräten, damit die Zentrale nicht geflutet wird |
+| Datenpunkte je Raum | `Funk_dBm`, `Funk_Geraet`, `Funk_Zentrale`, `Funk_Stand` |
+| Ampel | grün ab `FUNK_GUT` (−80), gelb bis `FUNK_MITTEL` (−90), darunter rot, ohne Messung grau |
+
+* **`RSSI_DEVICE` steht im Wartungskanal `:0`, nicht im Fahrkanal `:4`.** Der Zeitplan spricht mit Kanal 4; die
+  Funkgüte braucht deshalb eine eigene Abfrage auf Kanal 0 derselben Adresse.
+* **Angezeigt wird der schlechtere der beiden Werte.** `RSSI_DEVICE` ist, wie gut das Gerät die Zentrale hört,
+  `RSSI_PEER` die Gegenrichtung. Eine Funkstrecke ist nur so gut wie ihre schwächere Richtung — ein Aktor, der die
+  Zentrale gut hört, aber selbst nicht durchkommt, fällt genauso aus (siehe 4.4, Nachholen beim Fehlschlag).
+* **`0` heißt „unbekannt“, nicht „sehr gut“.** HomeMatic IP liefert für einen fehlenden Pegel `0` oder `128`. Ohne
+  das Gültigkeitsfenster `FUNK_MIN`…`FUNK_MAX` (−120 bis −20 dBm) würde daraus die beste Note der Anlage.
+* **Antwortet ein Gerät nicht, bleibt der alte Wert stehen**; `Funk_Stand` (Uhrzeit) verrät das Alter. Erst wenn
+  **kein einziges** Gerät antwortet, schreibt das Skript eine Warnung ins Log.
+* **Darstellung:** Die Zahl kommt als `-90` mit ASCII-Bindestrich, die Legende im Kopf der View ist gesetzt mit
+  typografischem `−`. Das Feld gleicht das beim Anzeigen an (`String(d).replace('-','−')`), sonst stehen in
+  derselben Zeile zwei verschiedene Minuszeichen.
+
+---
+
 ## 5 Thermostat-Wächter (`thermostat_waechter.js`)
 
 **Aufgabe:** Fehler an den Heizkörper-Thermostaten **melden**, bevor man sie friert: Ventil nicht angepasst, schwergängig, Batterie schwach, Funk weg.
@@ -394,7 +421,7 @@ Die CCU selbst wird nur an den dokumentierten Stellen geschrieben: `SET_POINT_TE
 | | `…Geraete.<adr>.*` | `UNREACH, LOW_BAT, OPERATING_VOLTAGE, RSSI_DEVICE, Batterie_Status, STATE` |
 | | `…Allgemein.*` | `Entsperrt, Bedienung_erlaubt, Verbindung, Fehler, Aktualisiert, Fenster_offen, Batterie_gelb/rot, Protokoll_*` |
 | Karten | `0_userdata.0.<Heizung>_Karten.kNN` | fertiges HTML je Widget |
-| Rollladen | `0_userdata.0.Rollladen_<Projekt>.<Raum>.*` | `Position, Ziel, Fahrt, Auto, Hoch_Min, Runter_Min, Befehl, Naechste, Heute` |
+| Rollladen | `0_userdata.0.Rollladen_<Projekt>.<Raum>.*` | `Position, Ziel, Fahrt, Auto, Hoch_Min, Runter_Min, Befehl, Naechste, Heute, Funk_dBm, Funk_Geraet, Funk_Zentrale, Funk_Stand` |
 | Batterie | `0_userdata.0.Batterien.<Zentrale>.*` | `Tabelle_HTML, Gesamt, Gruen, Gelb, Rot` |
 | Wächter | `0_userdata.0.Heizung.*` | `ThermostatFehler(Text), AnzahlFehler, Seite, Banner, TelegramTest, <key>.*` |
 

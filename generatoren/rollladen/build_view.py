@@ -52,6 +52,19 @@ def teil_bedienung(r):
     for i, pz in enumerate((0, 25, 50, 75, 100)):
         bg = B(V("z", zl), "z==%d&&'rgba(76,195,138,0.38)'||'rgba(255,255,255,0.08)'" % pz)
         o.append(btn(170 + i * 63, 232, 58, "%d %%" % pz, bf, "z%d" % pz, bg, 13, 28))
+    # Funkguete unten links, unter der Rollladen-Zeichnung (16.11.2026). Der Platz dort ist frei:
+    # die SVG endet bei y=232, die Knopfreihe beginnt erst bei x=170. Farbe nach Ampel, Werte aus
+    # dem Skript Schwiegereltern_Rollladen (alle 15 Minuten per XML-RPC aus dem Wartungskanal).
+    fd, fg, fz, fst = pid + "Funk_dBm", pid + "Funk_Geraet", pid + "Funk_Zentrale", pid + "Funk_Stand"
+    fbg = B(V("d", fd), "d?(d>=-80?'#2e7d32':(d>=-90?'#b07d12':'#b3382e')):'#4a545c'")
+    ftx = B(V("d", fd), "d?String(d).replace('-','\u2212')+' dBm':'kein Funkwert'")
+    tip = ("Funkg\u00fcte " + B(V("d", fd), "d&&d+' dBm'||'ohne Messung'")
+           + " \u2013 Ger\u00e4t h\u00f6rt Zentrale " + B(V("g", fg), "g&&g+' dBm'||'?'")
+           + ", Zentrale h\u00f6rt Ger\u00e4t " + B(V("z", fz), "z&&z+' dBm'||'?'")
+           + " \u2013 gemessen {" + fst + "}")
+    o.append('<div title="%s" style="position:absolute;left:22px;top:236px;width:124px;height:26px;border-radius:5px;'
+             'background:%s;border:1px solid rgba(255,255,255,0.18);font-size:14px;font-weight:700;line-height:24px;'
+             'text-align:center;color:#ffffff;letter-spacing:0.3px;">%s</div>' % (tip, fbg, ftx))
     return root("".join(o), 272, "18px 18px 0 0", "border:1px solid #2b333b;border-bottom:none;")
 
 def teil_zeitplan(r):
@@ -122,7 +135,11 @@ def header():
             '<div style="position:absolute;left:0;top:10px;font-size:46px;font-weight:700;letter-spacing:1px;">Rollladen</div>'
             '<div style="position:absolute;left:2px;top:62px;font-size:17px;color:#8a96a0;letter-spacing:0.5px;">Haus der Schwiegereltern · Zeitplan: je Rollladen einmal am Tag hoch und einmal runter</div>'
             '<a href="/vis-2/index.html?Schwiegereltern#Raeume" style="position:absolute;right:0;top:70px;font-size:14px;color:#4c9be8;text-decoration:none;">‹ Raumklima</a>'
-            '<div style="position:absolute;left:0;top:90px;width:1540px;height:2px;background:linear-gradient(90deg,#f2a93b,#4c9be8,#b07be0,rgba(176,123,224,0));"></div></div>' % (FONT,))
+            '<div style="position:absolute;left:0;top:90px;width:1540px;height:2px;background:linear-gradient(90deg,#f2a93b,#4c9be8,#b07be0,rgba(176,123,224,0));"></div>'
+            # Legende der Funkampel (16.11.2026). Sie steht im freien Streifen rechts der Unterzeile
+            # (links davon endet der Text bei ~720 px, rechts beginnt der Raumklima-Verweis erst oben).
+            '<div style="position:absolute;left:730px;top:64px;font-size:14px;color:#8a96a0;letter-spacing:0.2px;white-space:nowrap;">Funk<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#2e7d32;margin:0 4px 0 11px;vertical-align:-1px;"></span>gut ab −80 dBm<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#b07d12;margin:0 4px 0 11px;vertical-align:-1px;"></span>mittel bis −90<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#b3382e;margin:0 4px 0 11px;vertical-align:-1px;"></span>kritisch darunter<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#4a545c;margin:0 4px 0 11px;vertical-align:-1px;"></span>ohne Messung</div>'
+            '</div>' % (FONT,))
 
 def tile(label, value, caption, valcol="#ffffff", extra=""):
     return ('<div style="position:relative;width:370px;height:108px;font-family:%s;color:#e9eef2;background:linear-gradient(160deg,#1b2127,#12161a);border:1px solid #2b333b;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,0.4);">'

@@ -55,6 +55,10 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
   `followthesun`, Versatz je Raum einstellbar). Beim **Hochfahren** begrenzen zwei Schranken das Ergebnis (voreingestellt
   06:30–08:00), sonst risse der Rollladen Ende Juni um 05:15 auf. Berechnet wird nur `<Richtung>_Min` — Zeitplan, Anzeige
   und Notlauf-Plan lesen unverändert diesen einen Wert.
+* **Funkgüte je Aktor:** Jede Karte zeigt als Ampel, wie gut ihr Rollladen funkt (alle 15 Minuten aus dem
+  **Wartungskanal `:0`**). Angezeigt wird der **schlechtere** der beiden Werte `RSSI_DEVICE` und `RSSI_PEER` — eine
+  Funkstrecke ist nur so gut wie ihre schwächere Richtung. So sieht man einen wackeligen Aktor, **bevor** eine Fahrt
+  ausfällt.
 
 > **Hinweis zu `views/`:** Die JSON-Dateien sind Exporte der laufenden Views (mit Karten-Bindungen). `views/heizung_raeume.json` enthält zusätzlich einen
 > Shelly-Sensorblock, dessen Skript nicht Teil des Pakets ist. Für den eigenen Einbau besser die **Generator-Ausgabe** (`generatoren/ausgabe/vis-views.json`) verwenden.
@@ -98,11 +102,17 @@ Heizkörper-Thermostate, Fensterkontakte, Rollladenaktoren (HmIP)
 * **Neue Bedienelemente an den vorhandenen messen, nicht an der freien Fläche** — in beiden Richtungen. Zwei neu
   eingefügte Knöpfe waren 42 px breit mit 2 px Abstand, während alle anderen der View 58–106 px mit 4–6 px hatten; nach der
   Korrektur lagen die Zeilen senkrecht 2 px auseinander. Faustregel: Zeilenabstand = Knopfhöhe + 10 px.
+* **Funkpegel steht im Wartungskanal `:0`, und `0` heißt „unbekannt“.** Der Fahrkanal (`:4` beim BROLL‑2) kennt kein
+  `RSSI_DEVICE`; es braucht eine eigene Abfrage auf Kanal 0 derselben Adresse. Liefert HomeMatic IP keinen Pegel, kommt
+  `0` oder `128` — ungeprüft übernommen wird daraus die **beste** Note der Anlage. Deshalb gilt nur −120 bis −20 dBm.
+* **Zahl neben selbst geschriebenem Text: das Vorzeichen angleichen.** Ein Messwert kommt als `-90` mit
+  ASCII-Bindestrich, eine von Hand gesetzte Legende trägt das typografische `−`. Nebeneinander sieht das aus wie zwei
+  verschiedene Größen. Entweder beim Anzeigen umwandeln oder überall denselben Strich verwenden.
 
 ## Zeitsteuerung (Cron)
 
 Es wird **kein Cron-Eintrag auf dem Betriebssystem** gebraucht. Alle Takte laufen im ioBroker-Javascript-Adapter (`schedule(...)`, `setInterval`):
-Heizung jede Minute (Werte), alle 30 s (Geräte), alle 10 Minuten (Wochenprofile); Rollladen jede Sekunde (Position) und alle 20 s (Zeitplan);
+Heizung jede Minute (Werte), alle 30 s (Geräte), alle 10 Minuten (Wochenprofile); Rollladen jede Sekunde (Position), alle 20 s (Zeitplan) und alle 15 Minuten (Funkgüte);
 Batterien alle 5 Minuten; Thermostat-Wächter alle 5 Minuten plus täglich 09:00 (Erinnerung). Details in `docs/PROGRAMMLOGIK.md`, Abschnitt 7.
 Nur die **Zeitzone** des Rechners muss stimmen.
 
